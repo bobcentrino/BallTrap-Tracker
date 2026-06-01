@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.toggleDarkMode = toggleDarkMode;
     window.toggleHighVis = toggleHighVis;
     window.setAccent = setAccent;
+    window.cycleTheme = cycleTheme;
+    window.updateThemeIcon = updateThemeIcon;
 });
 
 // ========================================
@@ -286,4 +288,48 @@ function showToast(msg) {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
     }, 2500);
+}
+
+// ========================================
+// CYCLE THÈME RAPIDE (Clair → Sombre → Plein Soleil)
+// ========================================
+async function cycleTheme() {
+    var isDark = document.documentElement.classList.contains('dark-mode');
+    var isHighVis = document.documentElement.classList.contains('high-vis');
+
+    if (!isDark && !isHighVis) {
+        // Clair → Sombre
+        await toggleDarkMode(true);
+    } else if (isDark && !isHighVis) {
+        // Sombre → Plein Soleil
+        await toggleDarkMode(false);
+        await toggleHighVis(true);
+    } else {
+        // Plein Soleil → Clair
+        await toggleHighVis(false);
+    }
+    updateThemeIcon();
+    updateThemeColorMeta();
+}
+
+function updateThemeIcon() {
+    var isDark = document.documentElement.classList.contains('dark-mode');
+    var isHighVis = document.documentElement.classList.contains('high-vis');
+    var iconSun = document.getElementById('icon-theme-sun');
+    var iconMoon = document.getElementById('icon-theme-moon');
+    var iconSunBold = document.getElementById('icon-theme-sun-bold');
+    if (!iconSun) return;
+    iconSun.style.display = (!isDark && !isHighVis) ? 'block' : 'none';
+    iconMoon.style.display = (isDark && !isHighVis) ? 'block' : 'none';
+    iconSunBold.style.display = isHighVis ? 'block' : 'none';
+}
+
+function updateThemeColorMeta() {
+    var isDark = document.documentElement.classList.contains('dark-mode');
+    var isHighVis = document.documentElement.classList.contains('high-vis');
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    if (isHighVis) meta.setAttribute('content', '#1a1a2e');
+    else if (isDark) meta.setAttribute('content', '#1a1a2e');
+    else meta.setAttribute('content', '#3a7bd5');
 }
