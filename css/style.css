@@ -1,0 +1,2952 @@
+/* ============================================
+   DESIGN SYSTEM NEUMORPHIQUE — BALL-TRAP TRACKER
+   Version optimisée & nettoyée
+============================================ */
+
+/* 1. TOKENS & THÈMES */
+:root {
+    /* Couleurs de base */
+    --bg: #e0e5ec;
+    --shadow-dark: #a3b1c6;
+    --shadow-light: #ffffff;
+    --accent: #f39c12;
+    
+    /* Texte */
+    --text-primary: #8892a0;
+    --text-muted: #94a3b8;
+    --text-label: #999;
+    
+    /* Scores */
+    --score-excellent: #2ecc71;
+    --score-moyen: #f39c12;
+    --score-faible: #e74c3c;
+    
+    /* Ombres neumorphiques */
+    --neu-out-sm: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    --neu-out-md: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    --neu-out-lg: 9px 9px 16px var(--shadow-dark), -9px -9px 16px var(--shadow-light);
+    --neu-in: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+    --neu-in-sm: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
+    --neu-in-xs: inset 1px 1px 3px var(--shadow-dark), inset -1px -1px 3px var(--shadow-light);
+    
+    /* Rayons & Espacements */
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --gap: 16px;
+    --transition-theme: 0.3s ease;
+}
+
+/* MODE SOMBRE */
+:root.dark-mode {
+    --bg: #2d3748;
+    --shadow-dark: #1a202c;
+    --shadow-light: #4a5568;
+    --text-primary: #e2e8f0;
+    --text-muted: #718096;
+    --text-label: #4a5568;
+    --neu-out-sm: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    --neu-out-md: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    --neu-in: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    --neu-in-sm: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+    --neu-in-xs: inset 1px 1px 2px var(--shadow-dark), inset -1px -1px 2px var(--shadow-light);
+}
+
+/* MODE PLEIN SOLEIL */
+:root.high-vis {
+    --bg: #ffffff;
+    --shadow-dark: #d0d0d0;
+    --shadow-light: #ffffff;
+    --text-primary: #4b5563;
+    --text-muted: #444444;
+    --text-label: #666666;
+    --accent: #d35400;
+    --neu-out-sm: 2px 2px 0px var(--shadow-dark), -1px -1px 0px var(--shadow-light);
+    --neu-out-md: 2px 2px 0px var(--shadow-dark), -1px -1px 0px var(--shadow-light);
+    --neu-in: inset 2px 2px 4px var(--shadow-dark);
+    --neu-in-sm: inset 1px 1px 2px var(--shadow-dark);
+    --neu-in-xs: inset 1px 1px 1px var(--shadow-dark);
+    --score-excellent: #22c55e;
+    --score-moyen: #f59e0b;
+    --score-faible: #ef4444;
+}
+
+/* 2. BASE & TYPOGRAPHIE */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Reset navigateur : les boutons/inputs n'héritent pas la couleur par défaut */
+button, input, select, textarea {
+    color: inherit;
+    font-family: inherit;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    transition: background-color var(--transition-theme), color var(--transition-theme);
+    -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4 { color: var(--accent); font-weight: 800; letter-spacing: -0.5px; }
+h2 { font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
+
+/* 3. LAYOUT & PAGES */
+#app {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+.page {
+    display: none;
+    padding: 24px 20px;
+    padding-bottom: 110px; /* Augmenté de 80px à 110px pour le menu flottant */
+    animation: fadeIn 0.4s ease;
+}
+
+.page.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 4. SPLASH SCREEN */
+.page-splash {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s;
+}
+
+.page-splash.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.logo-area {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeInDown 0.8s ease;
+}
+
+.logo-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--text-primary) !important;
+    margin: 0;
+    letter-spacing: -1px;
+}
+
+.logo-sub {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 8px;
+    letter-spacing: 2px;
+}
+
+.btn-enter {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 1.4rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 12px 12px 24px var(--shadow-dark), -12px -12px 24px var(--shadow-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    animation: pulse 2s infinite, fadeInUp 0.8s ease 0.3s both;
+}
+
+.btn-enter:active {
+    box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+    transform: scale(0.95);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-version {
+    margin-top: 50px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* ---- LOGO BP-DEV ---- */
+.logo-bpdev-splash { width: 110px; max-width: 40vw; opacity: 0.65; margin-top: 12px; }
+.logo-bpdev-settings { width: 140px; max-width: 55vw; margin-top: 8px; }
+:root.dark-mode .logo-bpdev-splash,
+:root.dark-mode .logo-bpdev-settings { filter: brightness(0) invert(1); opacity: 0.75; }
+/* Plein soleil : logo inchangé (couleurs originales sur fond clair) */
+
+/* 5. NAVIGATION (TAB BAR) - VERSION FLOTTANTE PREMIUM */
+.tab-bar, .bottom-nav {
+    position: fixed;
+    bottom: max(6px, env(safe-area-inset-bottom)); /* Décollé du bord en bas */
+    left: 50%; /* Centré horizontalement */
+    transform: translateX(-50%); /* Astuce pour centrer parfaitement */
+    width: calc(100% - 40px); /* Laisse 20px de marge de chaque côté */
+    max-width: 560px; /* Ne s'étale pas trop sur tablette */
+    background: var(--bg);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 5px 12px;
+    border-radius: 24px; /* Bords bien arrondis pour l'effet pilule */
+    box-shadow: var(--neu-out-md); /* Ombre Neumorphique pour le faire flotter */
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.tab-item .tab-icon { font-size: 1.5rem; }
+.tab-item.active { color: var(--accent); }
+.tab-item:active { transform: scale(0.95); }
+
+/* 6. COMPOSANTS UI DE BASE */
+.card {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: var(--gap);
+    box-shadow: var(--neu-out-lg);
+    transition: box-shadow var(--transition-theme);
+}
+
+.btn-main {
+    width: 100%;
+    height: 56px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s, background-color var(--transition-theme);
+    margin-bottom: var(--gap);
+}
+.btn-main:active { transform: scale(0.98); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
+
+.btn-secondary {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text-muted);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--neu-out-sm);
+    transition: all 0.2s;
+    margin-bottom: var(--gap);
+}
+.btn-secondary:active { box-shadow: var(--neu-in); color: var(--accent); }
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: var(--gap);
+    background: var(--bg);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--neu-in);
+}
+
+.btn-choice {
+    flex: 1;
+    height: 48px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text-primary) !important;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--neu-out-sm);
+    transition: all 0.2s;
+}
+.btn-choice.active { background: var(--accent); color: #fff !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.1); }
+.btn-choice:active { box-shadow: var(--neu-in); }
+
+.btn-sm {
+    padding: 10px 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text-primary) !important;
+    box-shadow: var(--neu-out-sm);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-sm.active { background: var(--accent); color: #fff !important; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1); }
+.btn-sm:active { transform: scale(0.95); }
+
+/* Inputs */
+.input-neu {
+    width: 100%;
+    height: 56px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    box-shadow: var(--neu-in);
+    padding: 0 18px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--text-primary) !important;
+    outline: none;
+    margin-bottom: var(--gap);
+    transition: box-shadow 0.2s, background-color var(--transition-theme);
+}
+
+select.input-neu {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 18px;
+    padding-right: 40px;
+}
+
+textarea.input-neu {
+    height: auto;
+    min-height: 80px;
+    padding: 16px;
+    resize: vertical;
+}
+
+.input-neu:focus { box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); }
+.input-neu::placeholder { color: var(--text-label); opacity: 0.7; }
+
+.form-group { margin-bottom: var(--gap); }
+.form-row { display: flex; gap: 12px; }
+
+.label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-label);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.error-msg {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--score-faible);
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.05), inset -3px -3px 6px rgba(255,255,255,0.9);
+    border-left: 4px solid var(--score-faible);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+.error-msg.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* 6b. CHAMP NOM COMPÉTITION — États */
+#input-comp-name.comp-mandatory {
+    box-shadow: var(--neu-in), inset 0 0 0 2px rgba(243, 156, 18, 0.35) !important;
+    background: rgba(243, 156, 18, 0.04) !important;
+}
+#input-comp-name.comp-mandatory::placeholder {
+    color: var(--accent) !important;
+    opacity: 0.7;
+}
+#input-comp-name.comp-mandatory:focus {
+    box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light), inset 0 0 0 2px rgba(243, 156, 18, 0.5) !important;
+}
+
+/* 7. HISTORIQUE & DÉTAIL */
+.history-list { display: flex; flex-direction: column; gap: 12px; }
+
+.history-card {
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--neu-out-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow var(--transition-theme);
+}
+.history-card:active { transform: scale(0.98); }
+
+.card-left { display: flex; flex-direction: column; gap: 4px; }
+.card-date { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+.card-disc { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+
+.card-score {
+    font-size: 1.3rem;
+    font-weight: 900;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.03);
+}
+.score-high { color: white; background: var(--score-excellent); box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); }
+.score-mid { color: var(--score-moyen); }
+.score-low { color: white; background: var(--score-faible); box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
+
+/* Page Détail */
+.btn-back {
+    background: none; border: none; color: var(--accent);
+    font-weight: 700; font-size: 1rem; cursor: pointer;
+    padding: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 6px;
+}
+.btn-back:active { opacity: 0.7; }
+
+.detail-container { display: flex; flex-direction: column; gap: 20px; }
+
+.detail-header {
+    text-align: center; padding: 30px; background: var(--bg);
+    border-radius: var(--radius-lg); box-shadow: var(--neu-out-md);
+}
+.detail-label {
+    display: block; font-size: 0.7rem; color: var(--text-label);
+    text-transform: uppercase; font-weight: 700; margin-bottom: 8px;
+}
+.detail-score { font-size: 3.5rem; font-weight: 900; line-height: 1; margin: 10px 0; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.detail-item {
+    background: var(--bg); padding: 18px; border-radius: var(--radius-md);
+    box-shadow: var(--neu-out-sm); display: flex; flex-direction: column; gap: 6px;
+}
+.detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+
+.choke-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.choke-line {
+    font-size: 1.1rem; font-weight: 700; color: var(--text-primary);
+    padding: 8px 12px; background: rgba(0,0,0,0.03); border-radius: 8px;
+}
+
+.badge-choke {
+    display: inline-block; padding: 4px 10px; border-radius: 12px;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+}
+.badge-choke.fixes { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+.badge-choke.amovibles { background: rgba(243, 156, 18, 0.15); color: var(--accent); }
+
+.detail-notes {
+    background: rgba(243, 156, 18, 0.08); border-left: 4px solid var(--accent);
+    padding: 16px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-top: 12px;
+}
+.detail-notes p { margin: 0; line-height: 1.6; color: var(--text-primary); font-size: 0.95rem; }
+
+.delete-btn {
+    background: none; border: none; font-size: 1.2rem; color: var(--text-muted);
+    cursor: pointer; padding: 8px; opacity: 0.4; transition: all 0.2s ease;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+}
+.delete-btn:hover, .delete-btn:active {
+    opacity: 1; color: var(--score-faible);
+    background: rgba(231, 76, 60, 0.1); transform: scale(1.05);
+}
+
+/* 8. RATELIER */
+.armurerie-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: var(--gap); }
+.gun-card {
+    background: var(--bg); border-radius: var(--radius-md); padding: 16px;
+    box-shadow: var(--neu-out-sm); display: flex; justify-content: space-between; align-items: center;
+}
+.gun-info h4 { margin: 0 0 4px 0; font-size: 1rem; color: var(--text-primary); }
+.gun-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+.gun-actions button { background: none; border: none; font-size: 1.3rem; cursor: pointer; opacity: 0.6; }
+.gun-actions button:hover { opacity: 1; }
+
+/* 9. MODALES */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(224, 229, 236, 0.9);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000; animation: fadeIn 0.2s ease;
+}
+
+:root.dark-mode .modal-overlay { background: rgba(45, 55, 72, 0.95); }
+:root.high-vis .modal-overlay { background: rgba(255, 255, 255, 0.95); }
+
+.modal-box {
+    background: var(--bg); border-radius: var(--radius-lg);
+    padding: 28px 24px; width: 90%; max-width: 400px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.2), var(--neu-out-lg);
+    animation: slideUpModal 0.3s ease;
+}
+
+@keyframes slideUpModal {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-box h3 { margin: 0 0 24px 0; text-align: center; font-size: 1.3rem; }
+
+.modal-box .input-neu {
+    box-shadow: var(--neu-in) !important;
+    background: var(--bg) !important;
+    border: none !important;
+}
+
+.modal-box .input-neu:focus {
+    box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light) !important;
+}
+
+.modal-box .btn-main,
+.modal-box .btn-secondary { margin-bottom: 0; height: 50px; }
+
+/* Modales Stats */
+.modal-stats {
+    max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto;
+}
+
+.modal-stats .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 16px;
+}
+
+.modal-stats .modal-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-primary); }
+
+.modal-stats .modal-close {
+    background: none; border: none; font-size: 1.5rem; color: var(--text-muted);
+    cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; line-height: 1;
+}
+
+.modal-stats .modal-close:hover { background: rgba(0,0,0,0.05); color: var(--text-primary); }
+
+/* 10. PARAMÈTRES & TOGGLES */
+.toggle-container {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.toggle-container:last-child { border-bottom: none; }
+
+.toggle-label {
+    font-weight: 700; color: var(--text-primary); font-size: 0.95rem;
+}
+
+.toggle-switch {
+    position: relative; width: 52px; height: 28px; flex-shrink: 0;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg); box-shadow: var(--neu-in);
+    transition: 0.3s; border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute; content: ""; height: 20px; width: 20px;
+    left: 4px; bottom: 4px; background-color: var(--text-muted);
+    transition: 0.3s; border-radius: 50%;
+}
+
+input:checked + .toggle-slider { background-color: var(--accent); box-shadow: none; }
+input:checked + .toggle-slider:before { transform: translateX(24px); background-color: white; }
+
+.color-selector { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.color-dot {
+    width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent; box-shadow: var(--neu-out-sm);
+    transition: all 0.2s;
+}
+.color-dot:hover { transform: scale(1.1); }
+.color-dot.active {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text-primary);
+}
+
+/* 11. TOAST NOTIFICATION */
+.toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff; padding: 14px 28px;
+    border-radius: 25px; font-weight: 700; font-size: 0.95rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 9999;
+    animation: slideUp 0.3s ease-out; pointer-events: none;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* 12. SVG ICONS */
+.icon, .icon-sm, .icon-lg, .nav-icon, .vent-icon {
+    display: inline-block; vertical-align: middle;
+    stroke: currentColor !important; fill: none !important;
+    stroke-width: 2 !important; stroke-linecap: round !important; stroke-linejoin: round !important;
+}
+
+.bottom-nav .tab-item svg { color: var(--text-muted); transition: color 0.2s ease; }
+.bottom-nav .tab-item.active svg { color: var(--accent); }
+
+.btn-vent svg { stroke: currentColor; transition: all 0.2s ease; }
+.btn-vent.active svg { stroke: white; }
+
+.btn-main svg, .btn-secondary svg { flex-shrink: 0; }
+.label svg { vertical-align: text-bottom; margin-right: 4px; }
+
+/* Icônes d'action */
+.action-btn {
+    background: none; border: none; cursor: pointer; padding: 8px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.4; transition: all 0.2s ease; border-radius: 8px;
+}
+
+.action-btn svg {
+    width: 20px; height: 20px; stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.action-btn:hover { opacity: 1; background: rgba(0,0,0,0.05); }
+.action-btn.delete:hover { color: var(--score-faible); }
+.action-btn.edit:hover { color: var(--accent); }
+/* 13. PAGE SAISIE — SCORE INPUT PREMIUM */
+.score-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;        /* Réduit de 30px à 20px pour gagner de la place */
+    width: 100%;
+}
+
+#input-score {
+    width: 90px;           /* Réduit de 120px à 90px */
+    height: 90px;          /* Réduit de 120px à 90px */
+    border: none;
+    border-radius: 28px;   /* Ajusté pour garder le bel arrondi néumorphique */
+    background: var(--bg);
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+    font-size: 2.8rem;     /* Légèrement réduit de 3.5rem pour combler la marge */
+    font-weight: 900;
+    color: var(--accent);
+    text-align: center;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    margin: 0;
+}
+
+#input-score::placeholder { font-size: 1.2rem; color: var(--text-muted); opacity: 0.6; }
+#input-score:focus {
+    transform: scale(1.05); color: var(--text-primary);
+    box-shadow: inset 10px 10px 20px rgba(0,0,0,0.15), inset -10px -10px 20px rgba(255,255,255,1);
+}
+
+.score-label {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-muted); margin-bottom: 12px; font-weight: 800;
+}
+
+/* Suppression totale des spinners (flèches) */
+#input-score::-webkit-outer-spin-button,
+#input-score::-webkit-inner-spin-button {
+    -webkit-appearance: none !important; appearance: none !important; margin: 0 !important; display: none !important;
+}
+#input-score[type="number"] { -moz-appearance: textfield !important; appearance: textfield !important; }
+#input-score:focus::-webkit-outer-spin-button,
+#input-score:focus::-webkit-inner-spin-button {
+    -webkit-appearance: none !important; display: none !important;
+}
+
+/* Selects en gras */
+#select-fusil, #input-cartouche, #input-lieu {
+    font-weight: 700; color: var(--text-primary) !important;
+}
+#select-fusil option, #input-cartouche option, #input-lieu option { font-weight: 700; }
+
+/* 14. PAGE SAISIE — DISCIPLINES & VENT */
+/* ========================================
+   SAISIE - BOUTONS DISCIPLINE (Aligné sur le style Stats)
+   ======================================== */
+
+/* On laisse les divs internes (Grid) gérer la mise en page */
+#disc-group {
+    display: block !important; 
+}
+
+/* On s'assure juste que les boutons prennent 100% de la largeur de leur case Grid */
+#disc-group .btn-choice {
+    width: 100% !important;
+    height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+/* Boutons Vent */
+.btn-vent {
+    background: var(--bg) !important; border: none !important; border-radius: var(--radius-md) !important;
+    padding: 0 16px !important; cursor: pointer !important; transition: all 0.2s ease !important;
+    box-shadow: var(--neu-out-sm) !important; display: flex !important; flex-direction: row !important;
+    align-items: center !important; justify-content: center !important; gap: 8px !important;
+    color: var(--text-primary) !important; font-family: inherit !important; font-size: 1rem !important;
+    font-weight: 800 !important; width: 100% !important; height: 56px !important;
+    min-height: 56px !important; max-height: 56px !important;
+}
+
+.btn-vent span:first-child { font-size: 1.3rem !important; display: inline !important; margin-bottom: 0 !important; }
+.btn-vent:hover { transform: translateY(-2px) !important; box-shadow: var(--neu-out-md) !important; }
+.btn-vent.active {
+    background: var(--accent) !important; color: white !important;
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4) !important; transform: translateY(-2px) !important;
+}
+.btn-vent.active span { color: white !important; }
+
+/* 15. MÉTÉO — PLEINE LARGEUR */
+#page-saisie .form-group { width: 100% !important; max-width: 100% !important; display: block !important; }
+#page-saisie .input-neu, #page-saisie select, #page-saisie input[type="text"], #page-saisie input[type="number"] {
+    width: 100% !important; box-sizing: border-box !important;
+}
+
+#meteo-auto-card {
+    width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;
+    margin: 0 0 16px 0 !important; padding: 24px 20px !important; background: var(--bg) !important;
+    border-radius: 16px !important; box-shadow: var(--neu-out-sm) !important; display: block !important;
+}
+
+#meteo-icon { font-size: 3.2rem !important; line-height: 1.1 !important; }
+#meteo-temp { font-size: 2.2rem !important; font-weight: 800 !important; color: var(--text-primary) !important; line-height: 1.2 !important; }
+#meteo-desc { font-size: 1rem !important; color: var(--text-primary) !important; font-weight: 600 !important; }
+#meteo-wind-speed { font-size: 0.9rem !important; font-weight: 700 !important; color: var(--text-primary) !important; }
+#meteo-wind-dir { font-size: 0.9rem !important; font-weight: 600 !important; color: var(--text-muted) !important; }
+#meteo-auto-card button { width: 90% !important; max-width: 300px !important; margin: 15px auto 0 !important; display: flex !important; }
+
+/* Labels page saisie */
+#page-saisie .label {
+    font-size: 0.8rem !important; font-weight: 700 !important; color: var(--text-label) !important;
+    text-transform: uppercase !important; letter-spacing: 0.5px !important;
+    margin-bottom: 10px !important; display: block !important;
+}
+
+/* 16. FILTRES HISTORIQUE & STATS */
+.filter-group { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+
+.filter-btn {
+    background: var(--bg); border: none; padding: 8px 16px; border-radius: 20px;
+    font-weight: 600; font-size: 0.9rem; color: var(--text-muted); cursor: pointer;
+    transition: all 0.2s ease; box-shadow: var(--neu-out-sm); white-space: nowrap;
+}
+
+.filter-btn.active {
+    background: var(--accent); color: white; box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+}
+
+.filter-btn:hover:not(.active) {
+    transform: translateY(-2px); box-shadow: var(--neu-out-md);
+}
+
+/* Responsive filtres */
+@media (max-width: 480px) {
+    .filter-group { gap: 6px; }
+    .filter-btn { padding: 6px 12px; font-size: 0.85rem; }
+}
+/* 17. STATISTIQUES (Grilles & Graphiques) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+    padding: 0 4px;
+}
+
+.stat-card {
+    background: var(--bg);
+    padding: 20px 24px;
+    border-radius: 16px;
+    box-shadow: var(--neu-out-sm);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--neu-out-md); border-color: rgba(243, 156, 18, 0.3); }
+.stat-card:active { transform: translateY(-1px); }
+
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 6px; line-height: 1.2; }
+.stat-label { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+.stat-action { font-size: 0.8rem; color: var(--text-muted); font-style: italic; opacity: 0.8; }
+.stat-card:hover .stat-action { opacity: 1; color: var(--accent); }
+
+/* Graphiques SVG */
+.chart-container { width: 100%; min-height: 280px; padding: 20px; background: var(--bg); border-radius: 16px; box-shadow: var(--neu-in); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.chart-svg { width: 100%; height: 240px; display: block; }
+.chart-line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.chart-point { fill: white; stroke: var(--accent); stroke-width: 2; cursor: pointer; transition: r 0.2s; }
+.chart-point:hover { r: 6; fill: var(--accent); }
+.chart-grid-line { stroke: rgba(0,0,0,0.08); stroke-width: 1; stroke-dasharray: 3,3; }
+.chart-axis-label { font-size: 10px; fill: var(--text-muted); }
+
+/* Dark Mode Graphiques */
+.dark-mode .chart-grid-line { stroke: rgba(255,255,255,0.1); }
+
+/* 18. PAGE MES STANDS */
+.stand-list-container { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; padding-bottom: 80px; }
+.stand-card { background: var(--bg); border-radius: 16px; padding: 16px 20px; box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light); display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease; }
+.stand-card:active { transform: scale(0.98); }
+.stand-info { flex: 1; cursor: pointer; padding-right: 15px; }
+.stand-name { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.stand-details { font-size: 0.85rem; color: var(--text-muted); }
+.stand-actions { display: flex; gap: 12px; }
+
+.btn-stand-action { width: 40px; height: 40px; border-radius: 10px; border: none; background: var(--bg); box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
+.btn-stand-action svg { width: 20px; height: 20px; color: var(--text-muted); transition: color 0.2s; }
+.btn-stand-action.edit:hover { color: var(--accent); }
+.btn-stand-action.delete:hover { color: var(--score-faible); }
+
+/* Modal Stands - Harmonisation */
+.btn-stand-harmonized { background: var(--bg); color: var(--text-muted); border: none; border-radius: 12px; padding: 12px 16px; width: 100%; margin-bottom: 16px; box-shadow: var(--neu-out-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; }
+.btn-stand-harmonized svg { stroke: var(--text-muted); fill: none; transition: all 0.2s ease; }
+.btn-stand-harmonized:hover { color: var(--accent); transform: translateY(-1px); }
+.btn-stand-harmonized:hover svg { stroke: var(--accent); }
+.btn-stand-harmonized:active { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); }
+
+/* Champs modale stands en gras */
+#modal-stand input, #modal-stand textarea { font-weight: 700 !important; color: var(--text-primary) !important; }
+
+/* 19. RÉGLAGES (FIX LARGEUR & BOUTONS) */
+/* ✅ C'est ici que le problème de largeur du Footer est réglé définitivement */
+#page-reglages .card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+}
+
+/* Espacement Footer */
+#page-reglages .card:last-child { margin-bottom: 80px; }
+
+/* Harmonisation Boutons Réglages */
+.btn-settings {
+    width: 100%;
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--neu-out-sm);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-muted);
+}
+
+.btn-settings:hover { color: var(--accent); transform: translateY(-2px); }
+.btn-settings:hover svg { stroke: var(--accent); }
+.btn-settings:active { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); transform: translateY(0); }
+
+.btn-settings.delete { color: #e74c3c; margin-top: 24px; }
+.btn-settings.delete:hover { color: #c0392b; }
+
+hr.settings-divider { border: 0; height: 1px; background: var(--shadow-dark); opacity: 0.3; margin: 20px 0; }
+
+/* 20. RESPONSIVE FINAL (Mobile & Tablette) */
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+    .stat-value { font-size: 1.8rem; }
+    .modal-stats { width: 98%; margin: 10px; }
+    .chart-container { min-height: 240px; padding: 15px; }
+    .chart-svg { height: 200px; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .btn-enter { width: 150px; height: 150px; font-size: 1.2rem; }
+    
+    /* Ajustements Réglages mobile */
+    #page-reglages .card { padding: 16px; margin-bottom: 12px; border-radius: 14px; }
+    .btn-settings { padding: 12px 14px; font-size: 0.9rem; }
+}
+/* Force l'alignement identique pour toutes les cartes de Réglages */
+#page-reglages .card {
+    width: 100% !important;
+    padding: 24px !important;
+    box-sizing: border-box !important;
+    margin-bottom: 16px !important;
+}
+
+/* Footer : espace pour la barre de navigation */
+.settings-footer {
+    margin-bottom: 80px !important;
+    text-align: center !important;
+}
+/* ========================================
+   MODALES - POSITIONNEMENT ABSOLU
+   ======================================== */
+.modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    display: none !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: rgba(224, 229, 236, 0.92) !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+:root.dark-mode .modal-overlay { background: rgba(45, 55, 72, 0.95) !important; }
+:root.high-vis .modal-overlay { background: rgba(255, 255, 255, 0.95) !important; }
+
+/* Quand la modale est ouverte via JS */
+.modal-overlay[style*="display: flex"],
+.modal-overlay[style*="display:block"] {
+    display: flex !important;
+}
+/* ========================================
+   NOUVEAU STYLE CARTES STANDS (UX Optimisée)
+   ======================================== */
+
+/* 1. Carte générale */
+.stand-card {
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: var(--neu-out-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px; /* Espace entre les cartes */
+}
+
+/* 2. Zone de texte (gauche) - Cliquable */
+.stand-info {
+    flex: 1;
+    cursor: pointer;
+    padding-right: 15px;
+}
+
+.stand-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.stand-details {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* 3. Zone des boutons (droite) */
+.stand-actions {
+    display: flex;
+    gap: 12px; /* 👈 IMPORTANT : Espace entre les boutons */
+}
+
+/* 4. Style commun des boutons (plus gros pour le tactile) */
+.btn-stand-action {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-stand-action svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-muted); /* Couleur par défaut */
+    transition: stroke 0.2s;
+}
+
+/* 5. Survol : Bouton Voir (Couleur Thème) */
+.btn-stand-action.view:hover {
+    transform: translateY(-2px);
+}
+.btn-stand-action.view:hover svg {
+    stroke: var(--accent);
+}
+
+/* 6. Survol : Bouton Poubelle (Rouge) */
+.btn-stand-action.delete:hover {
+    transform: translateY(-2px);
+    background: rgba(231, 76, 60, 0.1); /* Fond rouge très léger */
+}
+.btn-stand-action.delete:hover svg {
+    stroke: var(--score-faible);
+}
+/* Modal Confirmation - Ajustements */
+#modal-confirm .modal-box {
+    max-width: 340px !important;
+    text-align: center !important;
+}
+#modal-confirm #confirm-message {
+    margin: 0 auto 24px auto;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+#modal-confirm #btn-confirm-ok {
+    background: var(--score-faible) !important;
+    color: white !important;
+}
+#modal-confirm #btn-confirm-ok:hover {
+    background: #c0392b !important;
+    transform: translateY(-2px);
+}
+/* ========================================
+   BOUTON SUPPRESSION - RATELIER (FORCÉ)
+   ======================================== */
+
+/* On cible spécifiquement la page pour être sûr que ça prenne le dessus */
+#page-ratelier .btn-gun-delete {
+    background: var(--bg) !important;
+    box-shadow: var(--neu-out-sm) !important;
+    border: none !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Couleur de l'icône */
+#page-ratelier .btn-gun-delete svg {
+    stroke: var(--text-muted) !important;
+    width: 22px !important;
+    height: 22px !important;
+}
+
+/* 👇 SPÉCIAL MODE SOMBRE : Gris plus clair comme tu l'aimes */
+:root.dark-mode #page-ratelier .btn-gun-delete svg {
+    stroke: #94a3b8 !important; /* Force un gris clair visible sur fond sombre */
+}
+
+/* Survol */
+#page-ratelier .btn-gun-delete:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(231, 76, 60, 0.1) !important;
+}
+#page-ratelier .btn-gun-delete:hover svg {
+    stroke: var(--score-faible) !important;
+}
+/* ========================================
+   BOUTON SUPPRESSION - HISTORIQUE
+   ======================================== */
+
+.btn-history-delete {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-history-delete svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-muted);
+    transition: stroke 0.2s;
+}
+
+/* Survol : Rouge + Petit effet */
+.btn-history-delete:hover {
+    transform: translateY(-2px);
+    background: rgba(231, 76, 60, 0.1);
+}
+.btn-history-delete:hover svg {
+    stroke: var(--score-faible);
+}
+
+/* Mode Sombre : Gris plus clair (comme demandé) */
+:root.dark-mode .btn-history-delete svg {
+    stroke: #94a3b8 !important;
+}
+/* ========================================
+   HISTORIQUE - BOUTONS DISCIPLINE (Aligné sur le style Stats)
+   ======================================== */
+
+/* On laisse les divs internes (Grid) gérer la mise en page */
+#historique-disc-group {
+    display: block !important; 
+}
+
+/* On s'assure juste que les boutons prennent 100% de la largeur de leur case Grid */
+#historique-disc-group .btn-choice {
+    width: 100% !important;
+    height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+/* ========================================
+   CORRECTION DESIGN DÉTAIL SÉRIE
+   ======================================== */
+
+/* 1. Bouton Retour PLUS LARGE et PLUS GROS */
+.btn-back-simple {
+    position: absolute !important;
+    top: 20px !important;
+    left: 20px !important;
+    width: 70px !important;  /* Plus large (était 56px) */
+    height: 56px !important; /* Plus haut */
+    border-radius: 16px !important;
+    background: var(--bg) !important;
+    box-shadow: var(--neu-out-sm) !important;
+    border: none !important;
+    font-size: 32px !important; /* Flèche plus grosse */
+    line-height: 1 !important;
+    color: var(--text-muted) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    z-index: 100 !important;
+    padding-left: 5px !important; /* Décale un peu la flèche vers la droite pour le centrage visuel */
+}
+
+/* Effet Hover */
+.btn-back-simple:hover {
+    background: var(--accent) !important;
+    color: white !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+}
+
+/* 2. DÉCALER LES MODULES DU DESSOUS (Aérer la page) */
+/* On ajoute de la marge en haut au conteneur principal */
+#page-detail-serie {
+    padding-top: 90px !important; /* Force l'espace en haut pour ne rien chevaucher */
+}
+
+/* On s'assure que le titre est bien centré et visible */
+#page-detail-serie h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px; /* Espace entre le titre et le score */
+    padding: 0 20px;
+}
+
+/* On espace un peu les cartes de contenu */
+#detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espace de 20px entre chaque module (score, date, fusil...) */
+}
+/* Bouton "Voir sur la carte" - Harmonisé */
+#page-detail-serie button[onclick*="google.com/maps"] {
+    transition: all 0.2s ease !important;
+}
+#page-detail-serie button[onclick*="google.com/maps"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+    opacity: 0.95;
+}
+/* ========================================
+   PAGE DÉTAIL - FINITIONS
+   ======================================== */
+
+/* Score centré et parfait */
+.detail-header .detail-score {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   MODALE PROGRESSION — Design System V2
+   ═══════════════════════════════════════════════ */
+
+/* Sélecteur de période (même style que discipline) */
+.prog-period-group {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+#prog-period-group .btn-choice {
+    height: 38px;
+    font-size: 0.75rem;
+}
+
+/* Jauge circulaire dans la modale */
+.prog-gauge-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.prog-gauge-ring {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+}
+.prog-gauge-bg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(#2ecc71 0% 0%, var(--bg) 0% 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.6s ease;
+}
+.prog-gauge-inner {
+    position: absolute;
+    top: 16px; left: 16px;
+    width: 98px; height: 98px;
+    background: var(--bg);
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.prog-gauge-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1;
+}
+.prog-gauge-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* 3 KPI Cards */
+.prog-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.prog-kpi-card {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: var(--neu-out-sm);
+}
+.prog-kpi-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+.prog-kpi-value {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+.prog-kpi-value.positive { color: var(--score-excellent); }
+.prog-kpi-value.negative { color: var(--score-faible); }
+.prog-kpi-value.neutral  { color: var(--text-muted); }
+
+/* Section graphique */
+.prog-chart-section {
+    margin-top: 4px;
+}
+.prog-chart-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Area chart — dégradé sous la courbe */
+.chart-area-fill {
+    fill: url(#progGradient);
+    opacity: 0.35;
+}
+.chart-smooth-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.chart-smooth-point {
+    fill: var(--bg);
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    cursor: pointer;
+    transition: r 0.2s, fill 0.2s;
+}
+.chart-smooth-point:hover {
+    r: 7;
+    fill: var(--accent);
+}
+.chart-tooltip-bg {
+    fill: var(--bg);
+    rx: 8; ry: 8;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+.chart-tooltip-text {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--text-primary);
+    text-anchor: middle;
+}
+.chart-tooltip-sub {
+    font-size: 9px;
+    fill: var(--text-muted);
+    text-anchor: middle;
+}
+
+/* Dark mode — Modale Progression */
+:root.dark-mode .prog-gauge-inner {
+    background: var(--bg);
+}
+:root.dark-mode .prog-gauge-bg {
+    background: conic-gradient(#2ecc71 0% 0%, var(--bg) 0% 100%);
+}
+
+/* High vis — Modale Progression */
+:root.high-vis .prog-gauge-inner {
+    background: var(--bg);
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    .prog-period-group { gap: 5px; }
+    #prog-period-group .btn-choice { font-size: 0.65rem; height: 34px; }
+    .prog-gauge-ring { width: 110px; height: 110px; }
+    .prog-gauge-inner { top: 14px; left: 14px; width: 82px; height: 82px; }
+    .prog-gauge-value { font-size: 1.6rem; }
+    .prog-kpi-value { font-size: 1rem; }
+}
+/* ========================================
+   CUSTOM NEUMORPHIC SELECT (Fusil)
+   ======================================== */
+.custom-neu-select {
+    position: relative;
+    width: 100%;
+    margin-bottom: var(--gap);
+}
+
+.custom-neu-trigger {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-primary) !important;
+}
+
+.custom-neu-trigger span {
+    color: var(--text-primary) !important;
+}
+
+.custom-neu-options {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--neu-out-lg);
+    z-index: 1000;
+    display: none;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.custom-neu-options.open {
+    display: block;
+}
+
+.custom-neu-option {
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.custom-neu-option:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.custom-neu-option.selected {
+    background: rgba(243, 156, 18, 0.15);
+    color: var(--accent);
+}
+
+/* Classe pour cacher le vrai select natif sans le supprimer */
+.hidden-select {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+}
+/* ========================================
+   CHIRURGIE RESPONSIVE PREMIUM 🏥
+   ======================================== */
+
+/* 1. Les boutons Discipline (Auto-adaptatifs !) */
+/* Cible les lignes de 5 boutons */
+#disc-group div[style*="grid-template-columns:repeat(5"],
+#historique-disc-group div[style*="grid-template-columns:repeat(5"],
+#stats-disc-group div[style*="grid-template-columns:repeat(5"] {
+    grid-template-columns: repeat(auto-fit, minmax(58px, 1fr)) !important;
+}
+
+/* Cible les lignes des 2 boutons Olympiques */
+#disc-group div[style*="grid-template-columns:1fr 1fr"],
+#historique-disc-group div[style*="grid-template-columns:1fr 1fr"],
+#stats-disc-group div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+}
+
+/* 2. Les menus Custom Selects (Toujours proportionnés) */
+.custom-neu-options {
+    max-width: 350px; /* Ne s'étire pas trop sur tablette, reste élégant */
+}
+
+/* 3. Les champs Choke 1 et 2 (Se superposent sur très petit écran) */
+@media (max-width: 340px) {
+    #choke-amovibles-selects .form-row {
+        flex-direction: column !important;
+    }
+    #choke-amovibles-selects .custom-neu-select {
+        flex: none !important;
+        width: 100% !important;
+    }
+}
+/* ========================================
+   PAGE ÉQUIPEMENT - TUILES PREMIUM
+   ======================================== */
+.equip-card {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 25px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--neu-out-lg);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.equip-card:active {
+    transform: scale(0.98);
+    box-shadow: var(--neu-in);
+}
+
+.equip-icon {
+    width: 36px;
+    height: 36px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.equip-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.equip-arrow {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+/* ========================================
+   MODALE ARMURERIE - AÉRÉE & DOUCE
+   ======================================== */
+
+/* 1. Aérer la modale globale */
+#modal-armurerie .modal-box {
+    padding: 28px 24px;
+}
+
+/* 2. Alléger les cartes fusils dans la modale */
+#modal-armurerie .gun-card {
+    background: transparent; /* Fond transparent au lieu du gris */
+    box-shadow: none !important; /* On enlève l'ombre lourde */
+    border-bottom: 1px solid rgba(0,0,0,0.06); /* Fine ligne de séparation */
+    border-radius: 0; /* Plus de bords arrondis pour une liste */
+    padding: 16px 5px; /* Moins de padding horizontal */
+    margin-bottom: 0;
+}
+
+#modal-armurerie .gun-card:last-child {
+    border-bottom: none; /* Pas de ligne sous le dernier fusil */
+}
+
+/* 3. Décoller le bouton "Ajouter" de la liste */
+#modal-armurerie #btn-ouvrir-ajout-fusil {
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+/* 4. Aérer le bouton poubelle dans la liste */
+#modal-armurerie .gun-actions button {
+    padding: 8px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+#modal-armurerie .gun-actions button:hover {
+    opacity: 1;
+    color: var(--score-faible);
+}
+/* ========================================
+   MODALES CARTOUCHES & TENUES - AÉRÉES
+   ======================================== */
+
+/* 1. Harmoniser la modale Cartouches avec Armurerie */
+#modal-cartouches .modal-box {
+    padding: 28px 24px;
+}
+
+.cartouche-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 14px 5px;
+    margin-bottom: 0;
+}
+
+.cartouche-row:last-child {
+    border-bottom: none;
+}
+
+.cartouche-row button:hover {
+    opacity: 1 !important;
+}
+
+/* 2. Style des sections Tenues */
+.tenue-section {
+    margin-bottom: 20px;
+}
+
+.tenue-header {
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.tenue-section textarea {
+    height: auto;
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* ============================================
+   STATS V2 — JAUGE CIRCULAIRE & DEMI-TUILES
+   ============================================ */
+
+/* ═══════ JAUGE CIRCULAIRE ═══════ */
+/* ═══════ JAUGE DANS TUILE (même taille que les autres tuiles) ═══════ */
+.tile.tile-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+}
+.gauge-ring-mini {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+.gauge-bg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(#2ecc71 0% 0%, var(--bg) 0% 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.5s ease;
+}
+.gauge-inner {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 66px;
+    height: 66px;
+    background: var(--bg);
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.gauge-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1;
+    transition: color 0.3s;
+}
+.gauge-unit {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 1px;
+}
+.gauge-info { text-align: center; }
+.gauge-title {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+.gauge-trend {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* ═══════ SÉPARATEUR DE SECTION ═══════ */
+.section-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 14px 0 8px 4px;
+    text-align: center;
+}
+
+/* ═══════ GRILLE DEMI-TUILES ═══════ */
+.tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+/* ═══════ DEMI-TUILE — Style universel ═══════ */
+.tile {
+    border-radius: 14px;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+    min-height: 95px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.tile:active { transform: scale(0.97); }
+
+/* Variante neumorphic (gris) — conservée pour compatibilité */
+.tile.neu {
+    background: var(--bg);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.10), -3px -3px 8px var(--shadow-light);
+}
+
+/* Variante colorée — Performance */
+.tile.perf {
+    color: #f5f0eb;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.14), -2px -2px 6px rgba(255,255,255,0.06);
+}
+.tile.perf.green  { background: linear-gradient(145deg, #2ecc71, #27ae60); }
+.tile.perf.orange { background: linear-gradient(145deg, #f39c12, #e67e22); }
+.tile.perf.red    { background: linear-gradient(145deg, #e74c3c, #c0392b); }
+.tile.perf.gold   { background: linear-gradient(145deg, #f1c40f, #d4a10f); color: #f5f0eb; }
+
+/* Variante bleu élégant — tuiles info/non-score */
+.tile.blue {
+    background: linear-gradient(145deg, #4a90d9, #3a7bc8);
+    color: #f5f0eb;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.14), -2px -2px 6px rgba(255,255,255,0.06);
+}
+
+/* Effet bulle supprimé — tuiles dégradées propres sans reflet haut-gauche */
+
+/* Contenu demi-tuile */
+.tile-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #f5f0eb;
+    opacity: 0.9;
+    margin-bottom: 6px;
+    text-align: center;
+}
+.tile-value {
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #f5f0eb;
+    text-align: center;
+}
+.tile-sub {
+    font-size: 0.6rem;
+    margin-top: 4px;
+    opacity: 0.85;
+    font-weight: 600;
+    color: #f5f0eb;
+    text-align: center;
+}
+
+/* Info chokes dans tuile fusil */
+.tile-chokes {
+    font-size: 0.55rem;
+    margin-top: 4px;
+    opacity: 0.75;
+    font-weight: 600;
+    color: #f5f0eb;
+    text-align: center;
+}
+
+/* Neumorphic tile text — conservé pour compatibilité */
+.tile.neu .tile-label { color: var(--text-muted); }
+.tile.neu .tile-value { color: var(--text-primary); }
+.tile.neu .tile-sub { color: var(--text-muted); }
+.tile.neu.tile-clickable::after { color: var(--text-muted); opacity: 0.5; }
+
+/* TUILE PLEINE LARGEUR */
+.tile.full-width { grid-column: 1 / -1; }
+
+/* ═══════ TUILE CLIQUABLE — Indicateur › (à droite, centré) ═══════ */
+.tile.tile-clickable {
+    padding-right: 26px; /* Espace pour le chevron */
+}
+.tile.tile-clickable::after {
+    content: '›';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #f5f0eb;
+    opacity: 0.7;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 2;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.tile.tile-clickable:active::after {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.15);
+}
+
+/* Tuile jauge — chevron à droite, centré verticalement */
+.tile.tile-gauge.tile-clickable {
+    padding-right: 26px;
+}
+.tile.tile-gauge.tile-clickable::after {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+.tile.tile-gauge.tile-clickable:active::after {
+    transform: translateY(-50%) scale(1.15);
+}
+
+/* Tuile compétition (pleine largeur) — chevron à droite, centré */
+.tile.full-width.tile-clickable::after {
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.tile.full-width.tile-clickable:active::after {
+    transform: translateY(-50%) scale(1.15);
+}
+
+/* ═══════ TUILE TABLEAU DE BORD (non cliquable) ═══════ */
+.tile.tile-dashboard {
+    cursor: default;
+}
+.tile.tile-dashboard:active {
+    transform: none;
+}
+
+/* ═══════ MODALE FUSIL & CHOKES ═══════ */
+.fusil-rank-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--neu-out-sm);
+    margin-bottom: 10px;
+    transition: transform 0.15s;
+}
+.fusil-rank-card:active { transform: scale(0.98); }
+
+.fusil-rank-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+.fusil-rank-circle.gold    { background: linear-gradient(145deg, #f1c40f, #d4a10f); }
+.fusil-rank-circle.silver  { background: linear-gradient(145deg, #bdc3c7, #95a5a6); }
+.fusil-rank-circle.bronze  { background: linear-gradient(145deg, #e67e22, #d35400); }
+.fusil-rank-circle.neutral { background: linear-gradient(145deg, #8892a0, #6b7280); }
+
+.fusil-rank-info {
+    flex: 1;
+    min-width: 0;
+}
+.fusil-rank-name {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.fusil-rank-detail {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+.fusil-rank-score {
+    font-weight: 900;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Choke bar chart */
+.choke-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 100%;
+    height: 180px;
+    padding: 10px 0;
+    gap: 6px;
+}
+.choke-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 60px;
+    min-width: 30px;
+}
+.choke-bar-pct {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+.choke-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 0.3s ease;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.08);
+}
+.choke-bar-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.2;
+}
+
+/* ═══════ DARK MODE — Tuiles Stats ═══════ */
+:root.dark-mode .tile.perf {
+    box-shadow: -4px -4px 12px rgba(74, 85, 104, 0.5), 4px 4px 12px rgba(26, 32, 44, 0.7);
+}
+:root.dark-mode .tile.blue {
+    background: linear-gradient(145deg, #3a7bc8, #2c6ab5);
+    box-shadow: -4px -4px 12px rgba(74, 85, 104, 0.5), 4px 4px 12px rgba(26, 32, 44, 0.7);
+}
+:root.dark-mode .tile.tile-gauge {
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+}
+:root.dark-mode .gauge-inner {
+    background: var(--bg);
+}
+:root.dark-mode .tile.perf.green  { background: linear-gradient(145deg, #27ae60, #1e8449); }
+:root.dark-mode .tile.perf.orange { background: linear-gradient(145deg, #e67e22, #d35400); }
+:root.dark-mode .tile.perf.red    { background: linear-gradient(145deg, #c0392b, #a93226); }
+:root.dark-mode .tile.perf.gold   { background: linear-gradient(145deg, #d4a10f, #b8860b); }
+:root.dark-mode .gauge-bg {
+    background: conic-gradient(#2ecc71 0% 0%, var(--bg) 0% 100%);
+}
+
+/* ═══════ HIGH VIS / PLEIN SOLEIL — Tuiles Stats ═══════ */
+:root.high-vis .tile.perf {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+:root.high-vis .tile.blue {
+    background: linear-gradient(145deg, #4a90d9, #3a7bc8);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+:root.high-vis .tile.tile-gauge {
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+}
+:root.high-vis .gauge-inner {
+    background: var(--bg);
+}
+:root.high-vis .tile.perf.green  { background: linear-gradient(145deg, #22c55e, #16a34a); }
+:root.high-vis .tile.perf.orange { background: linear-gradient(145deg, #f59e0b, #d97706); }
+:root.high-vis .tile.perf.red    { background: linear-gradient(145deg, #ef4444, #dc2626); }
+:root.high-vis .tile.perf.gold   { background: linear-gradient(145deg, #eab308, #ca8a04); }
+/* ========================================
+   ARBORESCENCE HISTORIQUE — V2 AÉRÉE
+   ======================================== */
+.tree-folder {
+    margin-bottom: 10px;
+}
+
+.tree-folder-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.tree-folder-header:active {
+    box-shadow: var(--neu-in);
+    transform: scale(0.99);
+}
+
+.tree-folder-header.open {
+    box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+}
+
+.tree-folder-icon {
+    color: var(--text-muted);
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+.tree-folder-icon svg {
+    width: 14px;
+    height: 14px;
+}
+.tree-folder-header.open .tree-folder-icon {
+    color: var(--accent);
+}
+
+.tree-folder-type-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.tree-folder-type-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.tree-folder-label {
+    flex: 1;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tree-folder-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: rgba(0,0,0,0.04);
+    padding: 3px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.tree-folder-header.open .tree-folder-count {
+    background: rgba(243, 156, 18, 0.12);
+    color: var(--accent);
+}
+
+.tree-folder-content {
+    padding-left: 10px;
+    padding-top: 6px;
+    border-left: 2px solid rgba(0,0,0,0.06);
+    margin-left: 20px;
+}
+:root.dark-mode .tree-folder-content {
+    border-left-color: rgba(255,255,255,0.08);
+}
+
+/* ── NIVEAU 0 : ANNÉE ── */
+.tree-folder[data-depth="0"] > .tree-folder-header {
+    font-size: 1.1rem;
+    font-weight: 800;
+    padding: 14px 16px;
+    border-radius: 14px;
+    box-shadow: var(--neu-out-md);
+}
+.tree-folder[data-depth="0"] > .tree-folder-header .tree-folder-label {
+    color: var(--accent);
+    font-size: 1.1rem;
+}
+.tree-folder[data-depth="0"] > .tree-folder-header .tree-folder-type-icon svg {
+    width: 22px;
+    height: 22px;
+}
+.tree-folder[data-depth="0"] > .tree-folder-header .tree-folder-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ── NIVEAU 1 : TRIMESTRE ── */
+.tree-folder[data-depth="1"] > .tree-folder-header {
+    padding: 12px 14px;
+}
+.tree-folder[data-depth="1"] > .tree-folder-header .tree-folder-label {
+    color: var(--text-primary);
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+/* ── NIVEAU 2 : MOIS ── */
+.tree-folder[data-depth="2"] > .tree-folder-header .tree-folder-label {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* ── NIVEAU 3 : SEMAINE ── */
+.tree-folder[data-depth="3"] > .tree-folder-header {
+    background: rgba(0,0,0,0.02);
+}
+.tree-folder[data-depth="3"] > .tree-folder-header .tree-folder-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+:root.dark-mode .tree-folder[data-depth="3"] > .tree-folder-header {
+    background: rgba(255,255,255,0.03);
+}
+
+/* ── NIVEAU 4 : DISCIPLINE ── */
+.tree-folder[data-depth="4"] > .tree-folder-header {
+    background: rgba(243, 156, 18, 0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
+}
+.tree-folder[data-depth="4"] > .tree-folder-header .tree-folder-label {
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 0.88rem;
+}
+:root.dark-mode .tree-folder[data-depth="4"] > .tree-folder-header {
+    background: rgba(243, 156, 18, 0.12);
+}
+
+/* ── CARTES SÉRIES (obsolète, conservé pour compat) ── */
+.tree-serie-card {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: var(--neu-out-sm);
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+}
+.tree-serie-card:active {
+    transform: scale(0.99);
+}
+
+.tree-serie-content {
+    flex: 1;
+}
+
+/* ── RÉSUMÉ DISCIPLINE CLIQUABLE (Option B) ── */
+.tree-disc-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(243, 156, 18, 0.06);
+    border-left: 3px solid var(--accent);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+}
+.tree-disc-summary:active {
+    transform: scale(0.98);
+    background: rgba(243, 156, 18, 0.12);
+}
+:root.dark-mode .tree-disc-summary {
+    background: rgba(243, 156, 18, 0.10);
+}
+.tree-disc-summary-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.tree-disc-summary-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.tree-disc-summary-icon svg {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+}
+.tree-disc-summary-text {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.88rem;
+}
+.tree-disc-summary-arrow {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 800;
+}
+
+/* ── CARTES SÉRIES À PLAT DANS LES MODALES ── */
+.modal-serie-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.modal-serie-card:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+:root.dark-mode .modal-serie-card {
+    border-bottom-color: rgba(255,255,255,0.08);
+}
+.modal-serie-content {
+    flex: 1;
+}
+.modal-serie-delete {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 8px;
+    margin-top: 2px;
+    transition: all 0.2s ease;
+}
+.modal-serie-delete svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--text-muted);
+    transition: stroke 0.2s;
+}
+.modal-serie-delete:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+.modal-serie-delete:hover svg {
+    stroke: var(--score-faible);
+}
+
+/* ── TUILES COMPÉTITION ── */
+.tree-comp-tile {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    padding: 14px 16px;
+    border-radius: 12px;
+    box-shadow: var(--neu-out-sm);
+    margin-bottom: 10px;
+    border-left: 3px solid var(--accent);
+    transition: transform 0.2s;
+}
+.tree-comp-tile:active {
+    transform: scale(0.99);
+}
+
+.tree-comp-content {
+    flex: 1;
+    cursor: pointer;
+}
+
+.tree-comp-score {
+    text-align: right;
+    margin-left: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.comp-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+.comp-badge svg {
+    stroke: #fff;
+}
+
+.tree-delete-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    margin-left: 8px !important;
+    flex-shrink: 0 !important;
+}
+
+.tree-delete-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.tree-folder-content {
+    animation: treeFadeIn 0.2s ease;
+}
+
+@keyframes treeFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   MODALE MÉTÉO & VENT — Cartes + Graphique
+   ======================================== */
+
+/* Grille de cartes météo (3 colonnes) */
+.meteo-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+/* Carte météo individuelle (relief neumorphique) */
+.meteo-card {
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--neu-out-sm);
+    padding: 14px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.15s ease;
+}
+.meteo-card:active { transform: scale(0.97); }
+
+.meteo-card-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.meteo-card-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+.meteo-card-pct {
+    font-size: 1.15rem;
+    font-weight: 900;
+    line-height: 1.1;
+}
+.meteo-card-pct.score-excellent { color: var(--score-excellent); }
+.meteo-card-pct.score-moyen     { color: var(--score-moyen); }
+.meteo-card-pct.score-faible    { color: var(--score-faible); }
+
+/* Graphique vent (barres verticales dans champ creux) */
+.vent-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 10px 0;
+    height: 100%;
+}
+
+.vent-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    max-width: 80px;
+}
+
+.vent-bar-pct {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.vent-bar {
+    width: 100%;
+    border-radius: 8px 8px 4px 4px;
+    transition: height 0.3s ease;
+    min-width: 36px;
+}
+
+.vent-bar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Responsive : 2 colonnes sur petit écran */
+@media (max-width: 380px) {
+    .meteo-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   MODALE COMPÉTITIONS — KPI + Cartes
+   ======================================== */
+
+/* KPI cards */
+.comp-kpi-card {
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: var(--neu-out-sm);
+    padding: 12px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.comp-kpi-val {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--accent);
+}
+.comp-kpi-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Carte compétition */
+.comp-card {
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--neu-out-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comp-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comp-card-name {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.comp-card-date {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+.comp-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Badge score par manche */
+.comp-serie-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.3;
+}
+
+.comp-card-score-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.comp-card-pct {
+    font-size: 1rem;
+    font-weight: 800;
+}
+.comp-card-total {
+    font-size: 1.4rem;
+    font-weight: 900;
+}
+
+/* ========================================
+   MODALE BADGES — Cartes pleine largeur
+   ======================================== */
+.badge-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    background: var(--bg);
+    box-shadow: var(--neu-out-sm);
+    transition: all 0.3s ease;
+}
+
+.badge-card.badge-unlocked {
+    border-left: 4px solid var(--score-excellent);
+}
+
+.badge-card.badge-locked {
+    opacity: 0.75;
+}
+
+/* Icône badge */
+.badge-icon-wrap {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--neu-out-sm);
+    background: var(--bg);
+}
+
+.badge-icon-wrap.badge-icon-locked {
+    box-shadow: var(--neu-in);
+}
+
+.badge-icon-svg {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.badge-icon-svg svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.badge-lock {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: var(--bg);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--neu-in-xs);
+}
+
+/* Contenu badge */
+.badge-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.badge-title {
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+}
+
+.badge-legend {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+/* Jauge badge */
+.badge-bar-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    box-shadow: var(--neu-in-xs);
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.badge-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease, background 0.3s ease;
+}
+
+/* Tuile Badges — Aperçu mini-badge */
+.badge-tile-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+}
+.badge-tile-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.badge-tile-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.badge-tile-icon.unlocked {
+    opacity: 1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.badge-tile-icon.locked {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+/* ══════════════════════════════════════════
+   DRILL-DOWN HISTORIQUE — Tuiles plates
+   Chaque niveau remplace le précédent (iOS Settings style)
+   ══════════════════════════════════════════ */
+
+/* Hide scrollbar globally for drill-down */
+.drill-viewport,
+.drill-level,
+.drill-level * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.drill-viewport::-webkit-scrollbar,
+.drill-level::-webkit-scrollbar,
+.drill-level *::-webkit-scrollbar { display: none; }
+
+/* Viewport container */
+.drill-viewport {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height: 50vh;
+}
+
+/* Each level slides in/out */
+.drill-level {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+    padding: 0 0 20px;
+}
+.drill-level.current  { transform: translateX(0);    opacity: 1; pointer-events: all; }
+.drill-level.left     { transform: translateX(-30%); opacity: 0; pointer-events: none; }
+.drill-level.right    { transform: translateX(100%);  opacity: 0; pointer-events: none; }
+
+/* Breadcrumb */
+.drill-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0 12px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+.drill-breadcrumb .bc-seg {
+    color: var(--info-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.drill-breadcrumb .bc-seg:hover { color: var(--accent); }
+.drill-breadcrumb .bc-sep { color: var(--text-label); font-size: 0.6rem; }
+.drill-breadcrumb .bc-current { color: var(--text-primary); font-weight: 700; }
+
+/* Level title */
+.drill-level-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    letter-spacing: 0.01em;
+}
+
+/* ─── Tile group: hollow container with flat tiles inside ─── */
+.drill-tile-group {
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+/* Individual flat tile (no neumorphism) */
+.drill-tile {
+    width: 100%;
+    padding: 15px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border-bottom: 1px solid var(--shadow-dark);
+    transition: background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    background: transparent;
+}
+.drill-tile:last-child { border-bottom: none; }
+.drill-tile:active { background: rgba(0,0,0,0.04); }
+:root.dark-mode .drill-tile:active { background: rgba(255,255,255,0.04); }
+
+.drill-tile .tile-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+.drill-tile .tile-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+.tile-icon.icon-year  { background: var(--info-color); }
+.tile-icon.icon-q     { background: var(--accent); }
+.tile-icon.icon-month { background: #9b59b6; }
+
+.drill-tile .tile-text { flex: 1; min-width: 0; }
+.drill-tile .tile-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.drill-tile .tile-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+.drill-tile .tile-chevron {
+    font-size: 1.2rem;
+    color: var(--text-label);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    margin-left: 8px;
+    opacity: 0.5;
+}
+
+/* ─── Back button ─── */
+.drill-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 14px;
+    margin-bottom: 8px;
+    background: var(--bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--neu-out-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--info-color);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.drill-back:active { transform: scale(0.96); box-shadow: var(--neu-in); }
+.drill-back .back-arrow { font-size: 1rem; }
+
+/* ─── Series card inside drill-down (flat, no neumorphism) ─── */
+.drill-series-group {
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.drill-series-card {
+    width: 100%;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border-bottom: 1px solid var(--shadow-dark);
+    transition: background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    background: transparent;
+    gap: 10px;
+}
+.drill-series-card:last-child { border-bottom: none; }
+.drill-series-card:active { background: rgba(0,0,0,0.04); }
+:root.dark-mode .drill-series-card:active { background: rgba(255,255,255,0.04); }
+
+.drill-series-card .sc-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+.drill-series-card .sc-date {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.drill-series-card .sc-detail {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+.drill-series-card .sc-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.drill-series-card .sc-badge {
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #fff;
+}
+.drill-series-card .sc-badge.fu    { background: #5b8def; }
+.drill-series-card .sc-badge.dtl   { background: #9b59b6; }
+.drill-series-card .sc-badge.trap1 { background: #1abc9c; }
+.drill-series-card .sc-badge.pch   { background: #e67e22; }
+.drill-series-card .sc-badge.cs    { background: #e66756; }
+
+.drill-series-card .sc-score {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+.drill-series-card .sc-pct {
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.drill-series-card .sc-pct.excellent { color: var(--v-color); }
+.drill-series-card .sc-pct.good     { color: var(--o-color); }
+.drill-series-card .sc-pct.poor     { color: var(--r-color); }
+
+/* Mini progress bar */
+.sc-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--shadow-dark);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+.sc-progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+.sc-progress-fill.excellent { background: var(--v-color); }
+.sc-progress-fill.good      { background: var(--o-color); }
+.sc-progress-fill.poor      { background: var(--r-color); }
+
+/* Delete button in drill-down series card */
+.drill-series-del {
+    background: none;
+    border: none;
+    color: var(--text-label);
+    cursor: pointer;
+    padding: 4px 6px;
+    opacity: 0.4;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+.drill-series-del:active { opacity: 1; color: var(--r-color); }
+
+/* ─── Empty state ─── */
+.drill-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ─── Drill-down slide-up animation ─── */
+@keyframes drillSlideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.drill-slide-up { animation: drillSlideUp 0.3s ease forwards; }

@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ball-Trap Tracker</title>
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3a7bd5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BallTrap">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* UTILITAIRES SVG */
+        .icon { width: 20px; height: 20px; vertical-align: middle; margin-right: 6px; flex-shrink: 0; }
+        .icon-sm { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
+        .icon-lg { width: 28px; height: 28px; }
+        .nav-icon { width: 26px; height: 26px; }
+        .vent-icon { width: 24px; height: 24px; margin-bottom: 4px; }
+        svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        /* BOUTONS FORMAT */
+        .btn-format { padding:12px 8px; border:none; border-radius:10px; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; transition:all 0.2s; background:var(--bg); color:var(--text-muted); box-shadow:var(--neu-out-sm); }
+        .btn-format.active { background:var(--accent); color:#fff; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- SPLASH SCREEN -->
+        <div id="page-0" class="page-splash">
+            <div class="logo-area">
+                <h1 class="logo-title">BALL-TRAP</h1>
+                <div class="logo-sub">Tracker</div>
+            </div>
+            <button class="btn-enter" onclick="entrerApp()"><span>Entrer</span></button>
+            <div class="logo-version">V 1.5</div>
+            <img src="bpdev-logo.svg" alt="BP-DEV" class="logo-bpdev-splash">
+        </div>
+
+        <!-- NAVIGATION BAS -->
+        <nav id="main-nav" class="bottom-nav" style="display:none;">
+            <div class="tab-item active" data-page="page-saisie">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <span class="tab-label">Saisie</span>
+            </div>
+            <div class="tab-item" data-page="page-historique">
+                <svg class="nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <span class="tab-label">Historique</span>
+            </div>
+            <div class="tab-item" data-page="page-ratelier">
+    <svg class="nav-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+    <span class="tab-label">Équipement</span>
+</div>
+                        <!-- NOUVEL ONGLET STATS -->
+            <div class="tab-item" data-page="page-stats">
+                <!-- Icône "Tendance" pour différencier de l'historique -->
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+                <span class="tab-label">Stats</span>
+            </div>
+                        <!-- NOUVEL ONGLET STANDS -->
+            <div class="tab-item" data-page="page-stands">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span class="tab-label">Stands</span>
+            </div>
+            <div class="tab-item" data-page="page-reglages">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="tab-label">Réglages</span>
+            </div>
+        </nav>
+
+        <!-- PAGE SAISIE -->
+        <div id="page-saisie" class="page">
+            <h2><svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Nouvelle Série</h2>
+            <form id="form-saisie" novalidate>
+                <!-- Discipline -->
+                <div id="disc-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
+                    
+                    <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">DISCIPLINE</div>
+            
+                    <!-- Ligne 1 : 5 boutons -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(58px, 1fr)); gap:10px; margin-bottom:10px;">
+                        <button type="button" class="btn-choice active" data-val="FU">FU</button>
+                        <button type="button" class="btn-choice" data-val="DTL">DTL</button>
+                        <button type="button" class="btn-choice" data-val="TRAP1">TRAP1</button>
+                        <button type="button" class="btn-choice" data-val="PCH">PCH</button>
+                        <button type="button" class="btn-choice" data-val="CS">CS</button>
+                    </div>
+            
+                    <!-- Ligne 2 : 2 boutons larges -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+                        <button type="button" class="btn-choice" data-val="Fosse Olympique">Fosse Olympique</button>
+                        <button type="button" class="btn-choice" data-val="Skeet Olympique">Skeet Olympique</button>
+                    </div>
+                </div>
+
+                <!-- FORMAT : Entrainement / 100 Plx / 200 Plx -->
+                <div id="format-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
+                    <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">FORMAT</div>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+                        <button type="button" class="btn-format active" data-format="entrainement" id="btn-format-0">Entrainement</button>
+                        <button type="button" class="btn-format" data-format="100" id="btn-format-100">100 Plx</button>
+                        <button type="button" class="btn-format" data-format="200" id="btn-format-200">200 Plx</button>
+                    </div>
+                </div>
+
+                <!-- TUILE COMPÉTITION (cachée par défaut) -->
+                <div id="competition-tile" style="display:none; background:var(--bg); padding:16px 20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px; border-left:5px solid var(--accent);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.7rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px;">🏆 Compétition en cours</div>
+                            <div id="comp-name" style="font-size:1rem; font-weight:900; color:var(--text-primary); margin-top:2px;"></div>
+                            <div id="comp-disc-mode" style="font-size:0.95rem; font-weight:700; color:var(--text-muted); margin-top:2px;">FU - 100 plateaux</div>
+                            <div id="comp-progression" style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">Série 0 / 4 terminées</div>
+                            <div id="comp-score-cumul" style="font-size:0.95rem; font-weight:700; color:var(--accent); margin-top:4px;">Score cumulé : 0</div>
+                        </div>
+                        <button type="button" id="btn-annuler-comp" style="width:36px; height:36px; border:none; border-radius:50%; background:var(--bg); box-shadow:var(--neu-out-sm); color:var(--score-faible); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+                    </div>
+                </div>
+
+                <!-- TUILE ÉQUIPEMENT (résumé 2 lignes, ouvre la modale) -->
+                <div id="equip-tile" style="background:var(--bg); padding:15px 20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px; cursor:pointer;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="flex:1;">
+                            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
+                                <span style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">ÉQUIPEMENT</span>
+                                <span id="equip-status-badge" style="font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(231,76,60,0.12); color:var(--score-faible); display:none;">À valider</span>
+                            </div>
+                            <div id="equip-line-1" style="font-size:0.9rem; color:var(--text-primary); font-weight:600; text-align:center;">Fusil — Chokes</div>
+                            <div id="equip-line-2" style="font-size:0.85rem; color:var(--text-muted); margin-top:2px; text-align:center;">Cartouche — Stand — Tenue</div>
+                        </div>
+                        <div style="color:var(--accent); font-size:1.5rem; font-weight:300; margin-left:10px;">›</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label">Score obtenu</label>
+                    <input type="number" id="input-score" class="input-neu" placeholder="Entrez votre score (max 25)">
+                    <span id="score-error" class="error-msg"></span>
+                </div>
+
+                <!-- Bouton Enregistrer — juste sous le score pour saisie rapide -->
+                <button type="button" class="btn-main" id="btn-enregistrer">Enregistrer la série</button>
+
+                <!-- Météo — en bas, accessoire par rapport à la saisie -->
+                <div class="form-group" style="margin-top:24px;">
+                    <div id="meteo-auto-card" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                        
+                        <!-- Section Météo Actuelle -->
+                        <div style="margin-bottom:15px;">
+                            <!-- Titre centré -->
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-label); text-transform:uppercase; text-align:center; letter-spacing:0.5px; margin-bottom:8px;">MÉTÉO ACTUELLE</div>
+                            <!-- Icône météo + condition centrées (visuel principal) -->
+                            <div style="text-align:center; margin-bottom:12px;">
+                                <div id="meteo-icon" style="font-size:3.2rem; line-height:1.1;">🌤️</div>
+                                <div id="meteo-temp" style="font-size:2.2rem; font-weight:800; color:var(--text-primary); line-height:1.2;">--°C</div>
+                                <div id="meteo-desc" style="font-size:1rem; color:var(--text-primary); font-weight:600;">Chargement...</div>
+                            </div>
+                            <!-- Séparateur léger -->
+                            <div style="border-top:1px solid rgba(0,0,0,0.06); margin:0 0 8px;"></div>
+                            <!-- Position à gauche / Vent à droite -->
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:4px;">
+                                    <svg viewBox="0 0 24 24" style="width:13px; height:13px; stroke:var(--text-muted); fill:none; stroke-width:2;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Position actuelle
+                                </div>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span id="meteo-wind-speed" style="font-size:0.9rem; font-weight:700; color:var(--text-primary);">-- km/h</span>
+                                    <span id="meteo-wind-dir" style="font-size:0.9rem; font-weight:600; color:var(--text-muted);">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton Rafraîchir (Centré) -->
+                        <div style="display:flex; justify-content:center; margin:15px 0;">
+                            <button type="button" onclick="refreshMeteo()" style="width:90%; max-width:300px; padding:12px; background:var(--bg); color:var(--accent); border:none; border-radius:10px; font-weight:700; font-size:0.95rem; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:var(--neu-out-sm); transition:all 0.2s;">
+                                <svg viewBox="0 0 24 24" style="width:20px; height:20px; stroke:var(--accent); fill:none; stroke-width:2;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                Rafraîchir la météo
+                            </button>
+                        </div>
+
+                        <!-- Section Vent -->
+                        <div style="margin-top:20px;">
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-label); text-transform:uppercase; text-align:center; letter-spacing:0.5px; margin-bottom:10px;">Vent sur le pas de tir</div>
+                            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+                                <button type="button" class="btn-vent" data-val="Faible" onclick="selectVent(this)">
+                                    <svg class="vent-icon" viewBox="0 0 24 24">
+                                        <line x1="3" y1="21" x2="3" y2="3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <line x1="3" y1="3" x2="6" y2="3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <line x1="3" y1="6" x2="6" y2="6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <path d="M6,2 Q10,3 13,14 L12,16 Q9,7 6,6 Z" fill="currentColor" opacity="0.2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <line x1="8.3" y1="5.5" x2="8" y2="9" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                        <line x1="10.5" y1="9.5" x2="10.2" y2="12.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                    </svg>
+                                    <span style="font-size:0.9rem; font-weight:700;">Faible</span>
+                                </button>
+                                <button type="button" class="btn-vent active" data-val="Modéré" onclick="selectVent(this)">
+                                    <svg class="vent-icon" viewBox="0 0 24 24">
+                                        <line x1="3" y1="21" x2="3" y2="3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <line x1="3" y1="3" x2="6" y2="3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <line x1="3" y1="6" x2="6" y2="6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <path d="M6,2 Q13,3 18,8 L17,10 Q12,7 6,6 Z" fill="currentColor" opacity="0.2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <line x1="10" y1="4" x2="9.6" y2="7.3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                        <line x1="14" y1="6" x2="13.3" y2="8.6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                    </svg>
+                                    <span style="font-size:0.9rem; font-weight:700;">Modéré</span>
+                                </button>
+                                <button type="button" class="btn-vent" data-val="Fort" onclick="selectVent(this)">
+                                    <svg class="vent-icon" viewBox="0 0 24 24">
+                                        <line x1="3" y1="21" x2="3" y2="3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <line x1="3" y1="3" x2="6" y2="3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <line x1="3" y1="6" x2="6" y2="6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                        <path d="M6,2 Q14,2 21,3.5 L20,6 Q13,6 6,6 Z" fill="currentColor" opacity="0.2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <line x1="11" y1="2.5" x2="10.8" y2="5.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                        <line x1="16" y1="3" x2="15.6" y2="5.7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                    </svg>
+                                    <span style="font-size:0.9rem; font-weight:700;">Fort</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div> <!-- Fin meteo-auto-card -->
+                </div> <!-- Fin form-group Météo -->
+            </form>
+        </div> <!-- Fin page-saisie -->
+
+        <!-- MODALE ÉQUIPEMENT -->
+        <div id="modal-equip" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:450px; max-height:85vh; display:flex; flex-direction:column;">
+                <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent);"><svg style="width:22px;height:22px;vertical-align:middle;margin-right:6px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>Équipement</h3>
+                
+                <div style="overflow-y:auto; flex:1; padding-right:5px;">
+                    <!-- Nom de session / compétition (toujours visible) -->
+                    <div id="comp-name-container" class="form-group" style="margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid rgba(0,0,0,0.06);">
+                        <label id="comp-name-label" class="label" style="text-align:center;">Nom de session</label>
+                        <input type="text" id="input-comp-name" class="input-neu comp-optional" placeholder="Optionnel — nom de session" style="padding-right:18px;">
+                        <span id="comp-name-error" class="error-msg"></span>
+                    </div>
+
+                    <!-- Fusil -->
+                    <div class="form-group">
+                        <label class="label" style="display:flex;align-items:center;justify-content:center;gap:6px;"><svg style="width:18px;height:18px;fill:currentColor;stroke:none;" viewBox="0 0 687.67 801.25"><path d="M683.75,668.75l-168.75-168.75,11.25-11.25h33.75c7.5,0,13.75-6.25,13.75-13.75s-6.25-13.75-13.75-13.75h-33.75l-155-156.25L120,55l12.5-12.5c5-5,5-13.75,0-20-5-5-13.75-5-20,0l-12.5,12.5L68.75,3.75c-5-5-13.75-5-20,0L3.75,50c-5,5-5,13.75,0,20l291.25,291.25-3.75,3.75c-5,5-7.5,12.5-7.5,20s2.5,13.75,7.5,20l95,95-16.25,16.25c-7.5,7.5-12.5,18.75-12.5,28.75,0,11.25,3.75,21.25,12.5,28.75l26.25,26.25c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l8.75-8.75,98.75,173.75c0,1.25,1.25,2.5,2.5,2.5l30,30c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l108.75-108.75c3.75-6.25,3.75-15-1.25-20ZM390,553.75c-2.5-2.5-3.75-6.25-3.75-10s1.25-7.5,3.75-10h0l16.25-16.25,26.25,26.25-13.75,13.75-12.5,12.5-16.25-16.25Z" fill="currentColor" stroke="none"/></svg> Fusil utilisé</label>
+                        <div id="custom-fusil-select" class="custom-neu-select">
+                            <div id="custom-fusil-trigger" class="custom-neu-trigger input-neu">
+                                <span id="custom-fusil-text">-- Aucun / Pas noté --</span>
+                                <svg class="icon-sm" viewBox="0 0 24 24" style="stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div id="custom-fusil-options" class="custom-neu-options"></div>
+                        </div>
+                        <select id="select-fusil" class="hidden-select"><option value="">-- Aucun / Pas noté --</option></select>
+                    </div>
+
+                    <!-- Chokes -->
+                    <div class="form-group" id="choke-saisie-container" style="display:none;">
+                        <label class="label" style="text-align:center;">Chokes utilisés</label>
+                        <div id="choke-fixes-display" class="input-neu" style="display:none; justify-content:center; align-items:center; font-weight:700; color:var(--text-muted); box-shadow: var(--neu-out-sm);">
+                            <svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <span id="fixed-choke-text"></span>
+                        </div>
+                        <div id="choke-amovibles-selects" style="display:none;">
+                            <div class="form-row" style="gap: 10px;">
+                                <div id="custom-choke1-select" class="custom-neu-select" style="flex:1;">
+                                    <div id="custom-choke1-trigger" class="custom-neu-trigger input-neu">
+                                        <span id="custom-choke1-text">1er Canon</span>
+                                        <svg class="icon-sm" viewBox="0 0 24 24" style="stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </div>
+                                    <div id="custom-choke1-options" class="custom-neu-options">
+                                        <div class="custom-neu-option selected" data-value="">1er Canon</div>
+                                        <div class="custom-neu-option" data-value="Cylindrique - CYL ○">Cylindrique - CYL ○</div>
+                                        <div class="custom-neu-option" data-value="1/4 - IC ●○">1/4 - IC ●○</div>
+                                        <div class="custom-neu-option" data-value="1/2 - MOD ●●○">1/2 - MOD ●●○</div>
+                                        <div class="custom-neu-option" data-value="3/4 - IM ●●●○">3/4 - IM ●●●○</div>
+                                        <div class="custom-neu-option" data-value="Full - F ●●●">Full - F ●●●</div>
+                                        <div class="custom-neu-option" data-value="Skeet - SK ◎">Skeet - SK ◎</div>
+                                        <div class="custom-neu-option" data-value="Extra Full - EF ●●●●">Extra Full - EF ●●●●</div>
+                                    </div>
+                                </div>
+                                <select id="select-choke1" class="hidden-select">
+                                    <option value="">1er Canon</option>
+                                    <option value="Cylindrique - CYL ○">Cylindrique - CYL ○</option>
+                                    <option value="1/4 - IC ●○">1/4 - IC ●○</option>
+                                    <option value="1/2 - MOD ●●○">1/2 - MOD ●●○</option>
+                                    <option value="3/4 - IM ●●●○">3/4 - IM ●●●○</option>
+                                    <option value="Full - F ●●●">Full - F ●●●</option>
+                                    <option value="Skeet - SK ◎">Skeet - SK ◎</option>
+                                    <option value="Extra Full - EF ●●●●">Extra Full - EF ●●●●</option>
+                                </select>
+                                <div id="custom-choke2-select" class="custom-neu-select" style="flex:1;">
+                                    <div id="custom-choke2-trigger" class="custom-neu-trigger input-neu">
+                                        <span id="custom-choke2-text">2ème Canon</span>
+                                        <svg class="icon-sm" viewBox="0 0 24 24" style="stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </div>
+                                    <div id="custom-choke2-options" class="custom-neu-options">
+                                        <div class="custom-neu-option selected" data-value="">2ème Canon</div>
+                                        <div class="custom-neu-option" data-value="Cylindrique - CYL ○">Cylindrique - CYL ○</div>
+                                        <div class="custom-neu-option" data-value="1/4 - IC ●○">1/4 - IC ●○</div>
+                                        <div class="custom-neu-option" data-value="1/2 - MOD ●●○">1/2 - MOD ●●○</div>
+                                        <div class="custom-neu-option" data-value="3/4 - IM ●●●○">3/4 - IM ●●●○</div>
+                                        <div class="custom-neu-option" data-value="Full - F ●●●">Full - F ●●●</div>
+                                        <div class="custom-neu-option" data-value="Skeet - SK ◎">Skeet - SK ◎</div>
+                                        <div class="custom-neu-option" data-value="Extra Full - EF ●●●●">Extra Full - EF ●●●●</div>
+                                    </div>
+                                </div>
+                                <select id="select-choke2" class="hidden-select">
+                                    <option value="">2ème Canon</option>
+                                    <option value="Cylindrique - CYL ○">Cylindrique - CYL ○</option>
+                                    <option value="1/4 - IC ●○">1/4 - IC ●○</option>
+                                    <option value="1/2 - MOD ●●○">1/2 - MOD ●●○</option>
+                                    <option value="3/4 - IM ●●●○">3/4 - IM ●●●○</option>
+                                    <option value="Full - F ●●●">Full - F ●●●</option>
+                                    <option value="Skeet - SK ◎">Skeet - SK ◎</option>
+                                    <option value="Extra Full - EF ●●●●">Extra Full - EF ●●●●</option>
+                                </select>
+                            </div>
+                        </div>
+                        <span id="choke-status" class="error-msg" style="font-size:0.75rem; margin-top:5px;"></span>
+                    </div>
+
+                    <!-- Cartouche -->
+                    <div class="form-group">
+                        <label class="label" style="display:flex;align-items:center;justify-content:center;gap:6px;"><svg style="width:18px;height:18px;fill:currentColor;stroke:none;" viewBox="0 0 767 577"><path d="M109.57.67c-16.1 2.9-36.3 14.5-52.8 30.2-16.2 15.5-28.1 31.7-38.3 52.4-20.7 42-24.2 83.5-9.5 112.7 4.1 8 12.4 15.3 27.9 24.6 7.7 4.7 17.8 10.8 22.5 13.6 4.7 2.9 17.1 10.4 27.5 16.7 10.5 6.4 28.5 17.3 40 24.3 58.1 35.3 111 67.5 153 93 14.3 8.6 28.5 17.3 31.5 19.2s22.6 13.8 43.5 26.5c40.1 24.3 49.3 29.9 83 50.3 11.6 7 23 14 25.5 15.5s14 8.5 25.5 15.5c11.6 7 25.3 15.4 30.5 18.5 5.2 3.2 16.4 10 24.9 15.2l15.5 9.3 4.4 8.9c7.5 14.8 17.9 23.6 33.7 28.1 8.6 2.5 24.2 1.7 35.5-2 43.3-14 87.7-60.5 114.1-119.4 22.8-51.1 26.3-103.2 9-133.5-5.8-10.1-16.9-19.3-27.6-23.1-6-2.1-23.2-3.1-29.3-1.7-4 .9-4.9.8-10.5-2.2-3.4-1.8-26.7-14.1-51.7-27.3-25-13.3-68.2-36.1-96-50.8s-69.8-37-93.5-49.5c-57.4-30.3-128.3-67.9-137-72.5-3.8-2-27.2-14.4-52-27.5-24.7-13-61-32.2-80.5-42.6-19.5-10.3-37.7-19.6-40.5-20.7-5.9-2.2-20.4-3.1-28.3-1.7m527.7 272.2c17.9 9.5 36.1 19.1 40.3 21.3 4.3 2.2 7.8 4.2 7.8 4.5s-3.9 2.4-8.7 4.5c-10.8 4.9-23 12.8-34.8 22.6-39.8 33.2-74.6 94.2-84.1 147.4-1.9 11-2.5 39.4-1 50.3l.8 6.3-18.3-11.2c-10.1-6.2-20.6-12.5-23.4-14.2-27.6-16.3-37.7-23.2-40.6-27.3-4.6-6.7-8.7-16.1-10.6-24.4-2.5-10.7-2.5-37.8.1-51.5 5.7-30.6 23.2-67.6 44.3-93.5 8.5-10.5 24.3-25.5 33.8-32.2 20.1-14.1 34.7-19.5 52.9-19.7l8.9-.1zm89.1 30c3.3 1.4 2.8 1.4-8.2 1-10.4-.4-12.6-.2-20.9 2.2-19.3 5.6-38.5 18.1-58.4 38-16.9 17-28.2 31.9-41.2 54.6-26.4 45.9-37.8 99-28.7 134.3 2.1 8.4 7.4 19.2 12 24.6 2.8 3.2 3.2 4.1 1.6 3.2-3.1-1.6-9.8-10.4-13.2-17-12.3-24.7-10.3-66.7 5.1-107.9 17.2-46 47-87.6 80.9-112.9 10.8-8.1 32.2-18.8 41.5-20.8 8.5-1.8 24.5-1.4 29.5.7m6.5 18.8c7.4 2.9 16.9 12 20.8 20 14 29.1 7.3 78.5-17.3 126.5-39.7 77.8-108.5 120.9-141.3 88.7-5.8-5.7-8.6-10.4-12.1-20-17.3-48.4 18.5-140.7 73.4-189 27.8-24.5 55.9-34.1 76.5-26.2" fill="currentColor" stroke="none"/></svg> Cartouche</label>
+                        <div id="custom-cartouche-select" class="custom-neu-select">
+                            <div id="custom-cartouche-trigger" class="custom-neu-trigger input-neu">
+                                <span id="custom-cartouche-text">-- Aucune / Pas noté --</span>
+                                <svg class="icon-sm" viewBox="0 0 24 24" style="stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div id="custom-cartouche-options" class="custom-neu-options"></div>
+                        </div>
+                        <select id="input-cartouche" class="hidden-select"><option value="">-- Aucune / Pas noté --</option></select>
+                    </div>
+
+                    <!-- Stand -->
+                    <div class="form-group">
+                        <label class="label" style="display:flex;align-items:center;justify-content:center;gap:6px;"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Lieu / Stand</label>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <div id="custom-stand-select" class="custom-neu-select" style="flex:1;">
+                                <div id="custom-stand-trigger" class="custom-neu-trigger input-neu">
+                                    <span id="custom-stand-text">-- Aucun / Pas noté --</span>
+                                    <svg class="icon-sm" viewBox="0 0 24 24" style="stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </div>
+                                <div id="custom-stand-options" class="custom-neu-options"></div>
+                            </div>
+                            <select id="input-lieu" class="hidden-select"><option value="">-- Aucun / Pas noté --</option></select>
+                            <button type="button" class="btn-main" style="width:56px; margin:0; padding:0; font-size:1.2rem; display:flex; align-items:center; justify-content:center;" onclick="openQuickStandModal()">
+                                <svg class="icon" style="margin:0;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tenue -->
+                    <div class="form-group">
+                        <label class="label" style="display:flex;align-items:center;justify-content:center;gap:6px;"><svg style="width:18px;height:18px;fill:currentColor;stroke:none;" viewBox="0 0 3000 2923"><path d="M565.28 958.96v135.44l-191.32 196.36L0 916.84 442.08 298c19.2 35.48 50.44 120.92 82.68 324.84C550.16 784.08 564 942 565.28 958.96M3000 916.84l-373.96 373.92-191.28-196.36V958.96c1.44-16.96 15.12-174.84 40.56-336 32-204 63.44-289.36 82.6-324.84z" fill="currentColor"/><path d="M2498.84 251.6c-30.6 49.96-64.24 150.48-97.16 359.08-27.28 172.88-41.28 342-41.44 343.68v1899.4c-34.04 15.08-137.92 42.48-451.8 58.32-208 10.48-406.36 10.6-408.32 10.6s-200.2 0-408.28-10.6c-313.88-16-417.72-43.24-451.8-58.32V954.32c0-1.68-14.12-170.8-41.44-343.68-32.92-208.56-66.56-309.08-97.16-359.08L1056.84 0a448.9 448.9 0 0 0 61.56 132.4c56.4 82.36 168.64 180.56 381.6 180.56s325.2-98.2 381.84-180.52c27.61-40.48 48.4-85.2 61.56-132.4z" fill="currentColor"/></svg> Tenue</label>
+                        <div id="custom-tenue-select" class="custom-neu-select">
+                            <div id="custom-tenue-trigger" class="custom-neu-trigger input-neu">
+                                <span id="custom-tenue-text">-- Aucune / Pas noté --</span>
+                                <svg class="icon-sm" viewBox="0 0 24 24" style="stroke:var(--text-muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div id="custom-tenue-options" class="custom-neu-options">
+                                <div class="custom-neu-option selected" data-value="">-- Aucune / Pas noté --</div>
+                            </div>
+                        </div>
+                        <select id="select-tenue" class="hidden-select"><option value="">-- Aucune / Pas noté --</option></select>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label class="label" style="text-align:center;">Notes (optionnel)</label>
+                        <textarea id="input-notes" class="input-neu" rows="2" placeholder="Ex: Vent de face, plateau difficile..."></textarea>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-main" id="btn-valider-equip" style="width:100%;">Valider l'équipement</button>
+            </div>
+        </div>
+
+        <!-- MODALE DÉTAIL COMPÉTITION (historique) -->
+        <div id="modal-comp-detail" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:500px; max-height:85vh; display:flex; flex-direction:column;">
+                <h3 style="margin:0 0 15px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M8 2h8v8a4 4 0 0 1-8 0V2z"/><path d="M6 4H4v3a2 2 0 0 0 2 2"/><path d="M18 4h2v3a2 2 0 0 1-2 2"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Compétition</h3>
+                <div id="comp-detail-header" style="background:var(--bg); padding:12px 16px; border-radius:12px; box-shadow:var(--neu-out-sm); margin-bottom:15px; text-align:center;">
+                    <div id="comp-detail-title" style="font-weight:900; font-size:1rem; color:var(--text-primary);"></div>
+                    <div id="comp-detail-score" style="font-size:0.95rem; color:var(--accent); font-weight:700; margin-top:4px;"></div>
+                </div>
+                <div id="comp-detail-series" style="overflow-y:auto; flex:1; min-height:0; display:flex; flex-direction:column;"></div>
+                <button type="button" class="btn-secondary" style="margin-top:15px; flex-shrink:0;" onclick="document.getElementById('modal-comp-detail').style.display='none'">Fermer</button>
+            </div>
+        </div>
+
+        <!-- MODALE DÉTAIL ENTRAÎNEMENT (historique) -->
+        <div id="modal-train-detail" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:500px; max-height:85vh; display:flex; flex-direction:column;">
+                <h3 style="margin:0 0 15px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Entraînement</h3>
+                <div id="train-detail-header" style="background:var(--bg); padding:12px 16px; border-radius:12px; box-shadow:var(--neu-out-sm); margin-bottom:15px; text-align:center;">
+                    <div id="train-detail-title" style="font-weight:900; font-size:1rem; color:var(--text-primary);"></div>
+                    <div id="train-detail-score" style="font-size:0.95rem; color:var(--accent); font-weight:700; margin-top:4px;"></div>
+                </div>
+                <div id="train-detail-series" style="overflow-y:auto; flex:1; min-height:0; display:flex; flex-direction:column;"></div>
+                <button type="button" class="btn-secondary" style="margin-top:15px; flex-shrink:0;" onclick="document.getElementById('modal-train-detail').style.display='none'">Fermer</button>
+            </div>
+        </div>
+
+                <!-- PAGE HISTORIQUE -->
+        <div id="page-historique" class="page">
+            <h2><svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Historique</h2>
+        
+            <!-- Filtres par discipline (STYLE STATS) -->
+            <div id="historique-disc-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
+    
+                <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">DISCIPLINE</div>
+            
+                <!-- Ligne 1 : 5 boutons -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(58px, 1fr)); gap:10px; margin-bottom:10px;">
+                    <button class="btn-choice active" onclick="filterHistorique('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterHistorique('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterHistorique('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterHistorique('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterHistorique('CS')" data-val="CS">CS</button>
+                </div>
+            
+                  <!-- Ligne 2 : 2 boutons côte à côte forcés à s'étirer -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+                <button class="btn-choice" style="display:block; width:100%; font-size:0.9rem; box-sizing:border-box;" onclick="filterHistorique('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                <button class="btn-choice" style="display:block; width:100%; font-size:0.9rem; box-sizing:border-box;" onclick="filterHistorique('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+            </div>
+            </div>
+
+            <div id="historique-list" class="history-list"><p style="text-align:center; color:#999; margin-top:30px;">Chargement...</p></div>
+        </div>
+
+                <!-- ========================================
+             PAGE MES STANDS
+             ======================================== -->
+        <div id="page-stands" class="page">
+            <h2>
+                <svg class="icon-lg" style="margin-right:8px; color:var(--accent);" viewBox="0 0 24 24">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Mes Stands
+            </h2>
+
+            <div id="stands-full-list" class="stand-list-container">
+                <!-- La liste complète sera générée ici par JS -->
+                <p style="text-align:center; color:var(--text-muted); padding:40px 0;">Chargement...</p>
+            </div>
+        </div>
+
+                <!-- PAGE EQUIPEMENT -->
+        <div id="page-ratelier" class="page">
+            <h2>
+                <svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> Équipement
+            </h2>
+
+                        <!-- TUILE FUSILS -->
+            <div class="equip-card" onclick="openArmurerieManager()">
+                <svg class="equip-icon svg-fill" style="width:44px;height:44px;" viewBox="0 0 687.67 801.25"><path d="M683.75,668.75l-168.75-168.75,11.25-11.25h33.75c7.5,0,13.75-6.25,13.75-13.75s-6.25-13.75-13.75-13.75h-33.75l-155-156.25L120,55l12.5-12.5c5-5,5-13.75,0-20-5-5-13.75-5-20,0l-12.5,12.5L68.75,3.75c-5-5-13.75-5-20,0L3.75,50c-5,5-5,13.75,0,20l291.25,291.25-3.75,3.75c-5,5-7.5,12.5-7.5,20s2.5,13.75,7.5,20l95,95-16.25,16.25c-7.5,7.5-12.5,18.75-12.5,28.75,0,11.25,3.75,21.25,12.5,28.75l26.25,26.25c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l8.75-8.75,98.75,173.75c0,1.25,1.25,2.5,2.5,2.5l30,30c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l108.75-108.75c3.75-6.25,3.75-15-1.25-20ZM390,553.75c-2.5-2.5-3.75-6.25-3.75-10s1.25-7.5,3.75-10h0l16.25-16.25,26.25,26.25-13.75,13.75-12.5,12.5-16.25-16.25Z" fill="currentColor" stroke="none"/></svg>
+                <div class="equip-title">Fusils</div>
+                <div class="equip-arrow">›</div>
+            </div>
+
+            <!-- TUILE CARTOUCHES -->
+            <div class="equip-card" onclick="openCartouchesManager()">
+                <svg class="equip-icon svg-fill" viewBox="0 0 767 577"><path d="M109.57.67c-16.1 2.9-36.3 14.5-52.8 30.2-16.2 15.5-28.1 31.7-38.3 52.4-20.7 42-24.2 83.5-9.5 112.7 4.1 8 12.4 15.3 27.9 24.6 7.7 4.7 17.8 10.8 22.5 13.6 4.7 2.9 17.1 10.4 27.5 16.7 10.5 6.4 28.5 17.3 40 24.3 58.1 35.3 111 67.5 153 93 14.3 8.6 28.5 17.3 31.5 19.2s22.6 13.8 43.5 26.5c40.1 24.3 49.3 29.9 83 50.3 11.6 7 23 14 25.5 15.5s14 8.5 25.5 15.5c11.6 7 25.3 15.4 30.5 18.5 5.2 3.2 16.4 10 24.9 15.2l15.5 9.3 4.4 8.9c7.5 14.8 17.9 23.6 33.7 28.1 8.6 2.5 24.2 1.7 35.5-2 43.3-14 87.7-60.5 114.1-119.4 22.8-51.1 26.3-103.2 9-133.5-5.8-10.1-16.9-19.3-27.6-23.1-6-2.1-23.2-3.1-29.3-1.7-4 .9-4.9.8-10.5-2.2-3.4-1.8-26.7-14.1-51.7-27.3-25-13.3-68.2-36.1-96-50.8s-69.8-37-93.5-49.5c-57.4-30.3-128.3-67.9-137-72.5-3.8-2-27.2-14.4-52-27.5-24.7-13-61-32.2-80.5-42.6-19.5-10.3-37.7-19.6-40.5-20.7-5.9-2.2-20.4-3.1-28.3-1.7m527.7 272.2c17.9 9.5 36.1 19.1 40.3 21.3 4.3 2.2 7.8 4.2 7.8 4.5s-3.9 2.4-8.7 4.5c-10.8 4.9-23 12.8-34.8 22.6-39.8 33.2-74.6 94.2-84.1 147.4-1.9 11-2.5 39.4-1 50.3l.8 6.3-18.3-11.2c-10.1-6.2-20.6-12.5-23.4-14.2-27.6-16.3-37.7-23.2-40.6-27.3-4.6-6.7-8.7-16.1-10.6-24.4-2.5-10.7-2.5-37.8.1-51.5 5.7-30.6 23.2-67.6 44.3-93.5 8.5-10.5 24.3-25.5 33.8-32.2 20.1-14.1 34.7-19.5 52.9-19.7l8.9-.1zm89.1 30c3.3 1.4 2.8 1.4-8.2 1-10.4-.4-12.6-.2-20.9 2.2-19.3 5.6-38.5 18.1-58.4 38-16.9 17-28.2 31.9-41.2 54.6-26.4 45.9-37.8 99-28.7 134.3 2.1 8.4 7.4 19.2 12 24.6 2.8 3.2 3.2 4.1 1.6 3.2-3.1-1.6-9.8-10.4-13.2-17-12.3-24.7-10.3-66.7 5.1-107.9 17.2-46 47-87.6 80.9-112.9 10.8-8.1 32.2-18.8 41.5-20.8 8.5-1.8 24.5-1.4 29.5.7m6.5 18.8c7.4 2.9 16.9 12 20.8 20 14 29.1 7.3 78.5-17.3 126.5-39.7 77.8-108.5 120.9-141.3 88.7-5.8-5.7-8.6-10.4-12.1-20-17.3-48.4 18.5-140.7 73.4-189 27.8-24.5 55.9-34.1 76.5-26.2" fill="currentColor"/></svg>
+                <div class="equip-title">Cartouches</div>
+                <div class="equip-arrow">›</div>
+            </div>
+
+            <!-- TUILE TENUES -->
+            <div class="equip-card" onclick="openTenuesManager()">
+                <svg class="equip-icon svg-fill" viewBox="0 0 3000 2923"><path d="M565.28 958.96v135.44l-191.32 196.36L0 916.84 442.08 298c19.2 35.48 50.44 120.92 82.68 324.84C550.16 784.08 564 942 565.28 958.96M3000 916.84l-373.96 373.92-191.28-196.36V958.96c1.44-16.96 15.12-174.84 40.56-336 32-204 63.44-289.36 82.6-324.84z" fill="currentColor"/><path d="M2498.84 251.6c-30.6 49.96-64.24 150.48-97.16 359.08-27.28 172.88-41.28 342-41.44 343.68v1899.4c-34.04 15.08-137.92 42.48-451.8 58.32-208 10.48-406.36 10.6-408.32 10.6s-200.2 0-408.28-10.6c-313.88-16-417.72-43.24-451.8-58.32V954.32c0-1.68-14.12-170.8-41.44-343.68-32.92-208.56-66.56-309.08-97.16-359.08L1056.84 0a448.9 448.9 0 0 0 61.56 132.4c56.4 82.36 168.64 180.56 381.6 180.56s325.2-98.2 381.84-180.52c27.61-40.48 48.4-85.2 61.56-132.4z" fill="currentColor"/></svg>
+                <div class="equip-title">Tenues</div>
+                <div class="equip-arrow">›</div>
+            </div>
+           </div>         <!-- MODALE ARMURERIE (Fusils) -->
+        <div id="modal-armurerie" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column;">
+                <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="icon-lg svg-fill" viewBox="0 0 687.67 801.25" style="width:38px;height:38px;"><path d="M683.75,668.75l-168.75-168.75,11.25-11.25h33.75c7.5,0,13.75-6.25,13.75-13.75s-6.25-13.75-13.75-13.75h-33.75l-155-156.25L120,55l12.5-12.5c5-5,5-13.75,0-20-5-5-13.75-5-20,0l-12.5,12.5L68.75,3.75c-5-5-13.75-5-20,0L3.75,50c-5,5-5,13.75,0,20l291.25,291.25-3.75,3.75c-5,5-7.5,12.5-7.5,20s2.5,13.75,7.5,20l95,95-16.25,16.25c-7.5,7.5-12.5,18.75-12.5,28.75,0,11.25,3.75,21.25,12.5,28.75l26.25,26.25c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l8.75-8.75,98.75,173.75c0,1.25,1.25,2.5,2.5,2.5l30,30c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l108.75-108.75c3.75-6.25,3.75-15-1.25-20ZM390,553.75c-2.5-2.5-3.75-6.25-3.75-10s1.25-7.5,3.75-10h0l16.25-16.25,26.25,26.25-13.75,13.75-12.5,12.5-16.25-16.25Z" fill="currentColor" stroke="none"/></svg> Mes Fusils</h3>
+                
+                <div id="armurerie-list" class="armurerie-list" style="overflow-y:auto; flex:1; margin-bottom:15px;"></div>
+                
+                <button id="btn-ouvrir-ajout-fusil" class="btn-main" style="width:100%; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Ajouter une arme
+                </button>
+                
+                <button class="btn-secondary" onclick="closeArmurerieManager()">Fermer</button>
+            </div>
+        </div>
+            
+
+        <!-- PAGE DÉTAIL -->
+        <div id="page-detail-serie" class="page">
+            <button class="btn-back-simple" onclick="router.navigate('page-historique')">←</button>
+            <h2 id="detail-titre">Détail</h2>
+            <div id="detail-content" class="detail-container"></div>
+        </div>
+
+    <!-- ========================================
+     PAGE STATISTIQUES — V2 Demi-tuiles colorées
+     ======================================== -->
+<div id="page-stats" class="page">
+    <h2>
+        <svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+        Statistiques
+    </h2>
+
+    <!-- ═══════ SÉLECTEUR 7 DISCIPLINES ═══════ -->
+    <div id="stats-disc-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:18px;">
+        <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">DISCIPLINE</div>
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-bottom:8px;">
+            <button class="btn-choice active" onclick="filterStats('FU')" data-val="FU">FU</button>
+            <button class="btn-choice" onclick="filterStats('DTL')" data-val="DTL">DTL</button>
+            <button class="btn-choice" onclick="filterStats('TRAP1')" data-val="TRAP1">TRAP1</button>
+            <button class="btn-choice" onclick="filterStats('PCH')" data-val="PCH">PCH</button>
+            <button class="btn-choice" onclick="filterStats('CS')" data-val="CS">CS</button>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;">
+            <button class="btn-choice" onclick="filterStats('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+            <button class="btn-choice" onclick="filterStats('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+        </div>
+    </div>
+
+    <!-- ═══════ JAUGE + BADGES (côte à côte) — CLIQUABLES ═══════ -->
+    <div class="tile-grid">
+        <!-- TUILE JAUGE CIRCULAIRE (Progression) -->
+        <div class="tile tile-gauge tile-clickable" onclick="openStatsModal('progression')">
+            <div class="gauge-ring-mini">
+                <div class="gauge-bg" id="gauge-bg-circle"></div>
+                <div class="gauge-inner">
+                    <div class="gauge-value" id="gauge-pct">--%</div>
+                    <div class="gauge-unit">Moyenne</div>
+                </div>
+            </div>
+            <div class="gauge-info">
+                <div class="gauge-title" id="gauge-disc-name">FU</div>
+                <div class="gauge-trend" id="gauge-trend">--</div>
+            </div>
+        </div>
+        <!-- TUILE BADGES -->
+        <div class="tile tile-clickable neu" id="tile-badges" onclick="openBadgesModal()">
+            <div class="tile-label">Badges</div>
+            <div class="tile-sub" id="tile-badges-sub">0/4 débloqués</div>
+            <div class="badge-tile-row" id="badge-tile-row"></div>
+        </div>
+    </div>
+
+    <!-- ═══════ ANALYSE PAR ÉQUIPEMENT — CLIQUABLES (remontées) ═══════ -->
+    <div class="section-label">Analyse par équipement</div>
+    <div class="tile-grid">
+        <div class="tile tile-clickable blue" id="tile-fusil" onclick="openFusilModal()">
+            <div class="tile-label">Fusil / Chokes</div>
+            <div class="tile-value" id="tile-fusil-val">--%</div>
+            <div class="tile-sub" id="tile-fusil-sub">--</div>
+            <div class="tile-chokes" id="tile-chokes-info"></div>
+        </div>
+        <div class="tile tile-clickable perf" id="tile-cartouche" onclick="openCartoucheModal()">
+            <div class="tile-label">Par cartouche</div>
+            <div class="tile-value" id="tile-cart-val">--%</div>
+            <div class="tile-sub" id="tile-cart-sub">--</div>
+        </div>
+        <div class="tile tile-clickable perf" id="tile-meteo" onclick="openMeteoModal()">
+            <div class="tile-label">Par météo</div>
+            <div class="tile-value" id="tile-meteo-val">--%</div>
+            <div class="tile-sub" id="tile-meteo-sub">--</div>
+        </div>
+        <div class="tile tile-clickable perf" id="tile-tenue" onclick="openTenueModal()">
+            <div class="tile-label">Par tenue</div>
+            <div class="tile-value" id="tile-tenue-val">--%</div>
+            <div class="tile-sub" id="tile-tenue-sub">--</div>
+        </div>
+    </div>
+
+    <!-- ═══════ PERFORMANCE — TABLEAU DE BORD (non cliquables) ═══════ -->
+    <div class="section-label">Performance</div>
+    <div class="tile-grid">
+        <div class="tile tile-dashboard perf" id="tile-best">
+            <div class="tile-label">Meilleure série</div>
+            <div class="tile-value" id="tile-best-val">--/--</div>
+            <div class="tile-sub" id="tile-best-pct">--%</div>
+        </div>
+        <div class="tile tile-dashboard perf" id="tile-last">
+            <div class="tile-label">Dernière série</div>
+            <div class="tile-value" id="tile-last-val">--/--</div>
+            <div class="tile-sub" id="tile-last-pct">--%</div>
+        </div>
+        <div class="tile tile-dashboard perf" id="tile-worst">
+            <div class="tile-label">Pire série</div>
+            <div class="tile-value" id="tile-worst-val">--/--</div>
+            <div class="tile-sub" id="tile-worst-pct">--%</div>
+        </div>
+        <div class="tile tile-dashboard blue" id="tile-month">
+            <div class="tile-label">Séries ce mois</div>
+            <div class="tile-value" id="tile-month-val">--</div>
+            <div class="tile-sub" id="tile-month-sub">en --</div>
+        </div>
+    </div>
+
+    <!-- ═══════ COMPÉTITION — Tuile dorée pleine largeur — CLIQUABLE ═══════ -->
+    <div class="section-label">Compétition</div>
+    <div class="tile-grid">
+        <div class="tile tile-clickable perf gold full-width" id="tile-comp" onclick="openCompModal()">
+            <div class="tile-label">Compétitions</div>
+            <div style="display:flex; gap:24px; align-items:flex-end; justify-content:center;">
+                <div>
+                    <div class="tile-value" id="tile-comp-count">0</div>
+                    <div class="tile-sub" id="tile-comp-count-sub">terminée(s)</div>
+                </div>
+                <div>
+                    <div class="tile-value" style="font-size:1rem;" id="tile-comp-best">--/--</div>
+                    <div class="tile-sub">meilleure</div>
+                </div>
+                <div>
+                    <div class="tile-value" style="font-size:1rem;" id="tile-comp-avg">--%</div>
+                    <div class="tile-sub">moyenne</div>
+                </div>
+                <div>
+                    <div class="tile-value" style="font-size:1rem; color:var(--accent);" id="tile-comp-global">--/--</div>
+                    <div class="tile-sub">global</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ========================================
+     MODALES GRAPHIQUES (Icônes SVG corrigées)
+     ======================================== -->
+
+<!-- Modal Progression -->
+<div id="modal-stats-progression" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                <span id="prog-title">Moyenne FU</span>
+            </h3>
+        </div>
+
+        <!-- SÉLECTEUR DE PÉRIODE (même style que discipline) -->
+        <div id="prog-period-group" class="prog-period-group">
+            <button class="btn-choice active" data-period="week">Semaine</button>
+            <button class="btn-choice" data-period="month">Mois</button>
+            <button class="btn-choice" data-period="trimester">Trimestre</button>
+            <button class="btn-choice" data-period="3months">-3 mois</button>
+            <button class="btn-choice" data-period="6months">-6 mois</button>
+        </div>
+
+        <!-- JAUGE CIRCULAIRE -->
+        <div class="prog-gauge-section">
+            <div class="prog-gauge-ring">
+                <div class="prog-gauge-bg" id="prog-gauge-bg"></div>
+                <div class="prog-gauge-inner">
+                    <div class="prog-gauge-value" id="prog-gauge-pct">--%</div>
+                    <div class="prog-gauge-label">MOYENNE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 KPIs -->
+        <div class="prog-kpi-row">
+            <div class="prog-kpi-card">
+                <div class="prog-kpi-label">Variation</div>
+                <div class="prog-kpi-value" id="prog-variation">--</div>
+            </div>
+            <div class="prog-kpi-card">
+                <div class="prog-kpi-label">Meilleure</div>
+                <div class="prog-kpi-value" id="prog-best">--/--</div>
+            </div>
+            <div class="prog-kpi-card">
+                <div class="prog-kpi-label">Séries</div>
+                <div class="prog-kpi-value" id="prog-count">--</div>
+            </div>
+        </div>
+
+        <!-- GRAPHIQUE D'ÉVOLUTION -->
+        <div class="prog-chart-section">
+            <div class="prog-chart-title" id="prog-chart-title">ÉVOLUTION CETTE SEMAINE</div>
+            <div id="chart-progression" class="chart-container">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeStatsModal('progression')">Fermer</button>
+    </div>
+</div>
+
+<!-- Modal Fusil & Chokes -->
+<div id="modal-stats-fusil" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-sm svg-fill" viewBox="0 0 687.67 801.25" style="width:20px;height:20px;"><path d="M683.75,668.75l-168.75-168.75,11.25-11.25h33.75c7.5,0,13.75-6.25,13.75-13.75s-6.25-13.75-13.75-13.75h-33.75l-155-156.25L120,55l12.5-12.5c5-5,5-13.75,0-20-5-5-13.75-5-20,0l-12.5,12.5L68.75,3.75c-5-5-13.75-5-20,0L3.75,50c-5,5-5,13.75,0,20l291.25,291.25-3.75,3.75c-5,5-7.5,12.5-7.5,20s2.5,13.75,7.5,20l95,95-16.25,16.25c-7.5,7.5-12.5,18.75-12.5,28.75,0,11.25,3.75,21.25,12.5,28.75l26.25,26.25c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l8.75-8.75,98.75,173.75c0,1.25,1.25,2.5,2.5,2.5l30,30c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l108.75-108.75c3.75-6.25,3.75-15-1.25-20ZM390,553.75c-2.5-2.5-3.75-6.25-3.75-10s1.25-7.5,3.75-10h0l16.25-16.25,26.25,26.25-13.75,13.75-12.5,12.5-16.25-16.25Z" fill="currentColor" stroke="none"/></svg>
+                <span>Fusil & Chokes</span>
+            </h3>
+        </div>
+
+        <!-- CONTENU SCROLLABLE -->
+        <div style="overflow-y:auto;flex:1;min-height:0;">
+            <!-- SÉLECTEUR DISCIPLINE (en relief) -->
+            <div id="fusil-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+                    <button class="btn-choice active" onclick="filterFusilModal('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterFusilModal('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterFusilModal('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterFusilModal('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterFusilModal('CS')" data-val="CS">CS</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                    <button class="btn-choice" onclick="filterFusilModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                    <button class="btn-choice" onclick="filterFusilModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+                </div>
+            </div>
+
+            <!-- CLASSEMENT PAR PERFORMANCE -->
+            <div class="section-label" style="margin-top:4px;">Classement par performance</div>
+            <div id="fusil-ranking-list">
+                <p class="loading-text">Chargement...</p>
+            </div>
+
+            <!-- PERFORMANCE PAR CHOKES -->
+            <div class="section-label" style="margin-top:16px;">Performance par chokes</div>
+            <div id="choke-chart" class="chart-container" style="min-height:200px;">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeFusilModal()">Fermer</button>
+    </div>
+</div>
+
+<!-- Modal Météo & Vent -->
+<div id="modal-stats-meteo" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <span>Météo & Vent</span>
+            </h3>
+        </div>
+
+        <!-- CONTENU SCROLLABLE -->
+        <div style="overflow-y:auto;flex:1;min-height:0;">
+            <!-- SÉLECTEUR DISCIPLINE (en relief) -->
+            <div id="meteo-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+                    <button class="btn-choice active" onclick="filterMeteoModal('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterMeteoModal('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterMeteoModal('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterMeteoModal('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterMeteoModal('CS')" data-val="CS">CS</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                    <button class="btn-choice" onclick="filterMeteoModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                    <button class="btn-choice" onclick="filterMeteoModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+                </div>
+            </div>
+
+            <!-- PERFORMANCE PAR CONDITIONS -->
+            <div class="section-label" style="margin-top:4px;">Performance par conditions</div>
+            <div id="meteo-cards-grid" class="meteo-cards-grid">
+                <p class="loading-text">Chargement...</p>
+            </div>
+
+            <!-- DÉTAIL PAR VENT -->
+            <div class="section-label" style="margin-top:16px;">Détail par vent</div>
+            <div id="vent-chart" class="chart-container" style="min-height:180px;">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeMeteoModal()">Fermer</button>
+    </div>
+</div>
+
+<!-- Modal Par Cartouche -->
+<div id="modal-stats-cartouche" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-sm svg-fill" viewBox="0 0 767 577" style="width:20px;height:20px;"><path d="M109.57.67c-16.1 2.9-36.3 14.5-52.8 30.2-16.2 15.5-28.1 31.7-38.3 52.4-20.7 42-24.2 83.5-9.5 112.7 4.1 8 12.4 15.3 27.9 24.6 7.7 4.7 17.8 10.8 22.5 13.6 4.7 2.9 17.1 10.4 27.5 16.7 10.5 6.4 28.5 17.3 40 24.3 58.1 35.3 111 67.5 153 93 14.3 8.6 28.5 17.3 31.5 19.2s22.6 13.8 43.5 26.5c40.1 24.3 49.3 29.9 83 50.3 11.6 7 23 14 25.5 15.5s14 8.5 25.5 15.5c11.6 7 25.3 15.4 30.5 18.5 5.2 3.2 16.4 10 24.9 15.2l15.5 9.3 4.4 8.9c7.5 14.8 17.9 23.6 33.7 28.1 8.6 2.5 24.2 1.7 35.5-2 43.3-14 87.7-60.5 114.1-119.4 22.8-51.1 26.3-103.2 9-133.5-5.8-10.1-16.9-19.3-27.6-23.1-6-2.1-23.2-3.1-29.3-1.7-4 .9-4.9.8-10.5-2.2-3.4-1.8-26.7-14.1-51.7-27.3-25-13.3-68.2-36.1-96-50.8s-69.8-37-93.5-49.5c-57.4-30.3-128.3-67.9-137-72.5-3.8-2-27.2-14.4-52-27.5-24.7-13-61-32.2-80.5-42.6-19.5-10.3-37.7-19.6-40.5-20.7-5.9-2.2-20.4-3.1-28.3-1.7m527.7 272.2c17.9 9.5 36.1 19.1 40.3 21.3 4.3 2.2 7.8 4.2 7.8 4.5s-3.9 2.4-8.7 4.5c-10.8 4.9-23 12.8-34.8 22.6-39.8 33.2-74.6 94.2-84.1 147.4-1.9 11-2.5 39.4-1 50.3l.8 6.3-18.3-11.2c-10.1-6.2-20.6-12.5-23.4-14.2-27.6-16.3-37.7-23.2-40.6-27.3-4.6-6.7-8.7-16.1-10.6-24.4-2.5-10.7-2.5-37.8.1-51.5 5.7-30.6 23.2-67.6 44.3-93.5 8.5-10.5 24.3-25.5 33.8-32.2 20.1-14.1 34.7-19.5 52.9-19.7l8.9-.1zm89.1 30c3.3 1.4 2.8 1.4-8.2 1-10.4-.4-12.6-.2-20.9 2.2-19.3 5.6-38.5 18.1-58.4 38-16.9 17-28.2 31.9-41.2 54.6-26.4 45.9-37.8 99-28.7 134.3 2.1 8.4 7.4 19.2 12 24.6 2.8 3.2 3.2 4.1 1.6 3.2-3.1-1.6-9.8-10.4-13.2-17-12.3-24.7-10.3-66.7 5.1-107.9 17.2-46 47-87.6 80.9-112.9 10.8-8.1 32.2-18.8 41.5-20.8 8.5-1.8 24.5-1.4 29.5.7m6.5 18.8c7.4 2.9 16.9 12 20.8 20 14 29.1 7.3 78.5-17.3 126.5-39.7 77.8-108.5 120.9-141.3 88.7-5.8-5.7-8.6-10.4-12.1-20-17.3-48.4 18.5-140.7 73.4-189 27.8-24.5 55.9-34.1 76.5-26.2" fill="currentColor"/></svg>
+                <span>Par cartouche</span>
+            </h3>
+        </div>
+
+        <!-- CONTENU SCROLLABLE -->
+        <div style="overflow-y:auto;flex:1;min-height:0;">
+            <!-- SÉLECTEUR DISCIPLINE (en relief) -->
+            <div id="cartouche-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+                    <button class="btn-choice active" onclick="filterCartoucheModal('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterCartoucheModal('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterCartoucheModal('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterCartoucheModal('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterCartoucheModal('CS')" data-val="CS">CS</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                    <button class="btn-choice" onclick="filterCartoucheModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                    <button class="btn-choice" onclick="filterCartoucheModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+                </div>
+            </div>
+
+            <!-- PERFORMANCE PAR CARTOUCHE -->
+            <div class="section-label" style="margin-top:4px;">Performance par cartouche</div>
+            <div id="cartouche-ranking-list">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeCartoucheModal()">Fermer</button>
+    </div>
+</div>
+
+<!-- Modal Par Tenue -->
+<div id="modal-stats-tenue" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-sm svg-fill" viewBox="0 0 3000 2923" style="width:20px;height:20px;"><path d="M565.28 958.96v135.44l-191.32 196.36L0 916.84 442.08 298c19.2 35.48 50.44 120.92 82.68 324.84C550.16 784.08 564 942 565.28 958.96M3000 916.84l-373.96 373.92-191.28-196.36V958.96c1.44-16.96 15.12-174.84 40.56-336 32-204 63.44-289.36 82.6-324.84z" fill="currentColor"/><path d="M2498.84 251.6c-30.6 49.96-64.24 150.48-97.16 359.08-27.28 172.88-41.28 342-41.44 343.68v1899.4c-34.04 15.08-137.92 42.48-451.8 58.32-208 10.48-406.36 10.6-408.32 10.6s-200.2 0-408.28-10.6c-313.88-16-417.72-43.24-451.8-58.32V954.32c0-1.68-14.12-170.8-41.44-343.68-32.92-208.56-66.56-309.08-97.16-359.08L1056.84 0a448.9 448.9 0 0 0 61.56 132.4c56.4 82.36 168.64 180.56 381.6 180.56s325.2-98.2 381.84-180.52c27.61-40.48 48.4-85.2 61.56-132.4z" fill="currentColor"/></svg>
+                <span>Par tenue</span>
+            </h3>
+        </div>
+
+        <!-- CONTENU SCROLLABLE -->
+        <div style="overflow-y:auto;flex:1;min-height:0;">
+            <!-- SÉLECTEUR DISCIPLINE (en relief) -->
+            <div id="tenue-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+                    <button class="btn-choice active" onclick="filterTenueModal('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterTenueModal('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterTenueModal('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterTenueModal('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterTenueModal('CS')" data-val="CS">CS</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                    <button class="btn-choice" onclick="filterTenueModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                    <button class="btn-choice" onclick="filterTenueModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+                </div>
+            </div>
+
+            <!-- PERFORMANCE PAR TENUE -->
+            <div class="section-label" style="margin-top:4px;">Performance par tenue</div>
+            <div id="tenue-ranking-list">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeTenueModal()">Fermer</button>
+    </div>
+</div>
+
+<!-- Modal Badges -->
+<div id="modal-stats-badges" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <span>Badges</span>
+            </h3>
+        </div>
+
+        <!-- CONTENU SCROLLABLE -->
+        <div style="overflow-y:auto;flex:1;min-height:0;">
+            <!-- SÉLECTEUR DISCIPLINE (en relief) -->
+            <div id="badges-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+                    <button class="btn-choice active" onclick="filterBadgesModal('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterBadgesModal('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterBadgesModal('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterBadgesModal('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterBadgesModal('CS')" data-val="CS">CS</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                    <button class="btn-choice" onclick="filterBadgesModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                    <button class="btn-choice" onclick="filterBadgesModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+                </div>
+            </div>
+
+            <!-- TOUT-TEMPS (label) -->
+            <div style="text-align:center; margin-bottom:14px;">
+                <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Statistiques tout-temps</span>
+            </div>
+
+            <!-- CARTES BADGES -->
+            <div id="badges-cards-list">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeBadgesModal()">Fermer</button>
+    </div>
+</div>
+
+<!-- Modal Compétitions -->
+<div id="modal-stats-comp" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 6 9 6 9zm12 0h1.5a2.5 2.5 0 0 0 0-5C17 4 18 9 18 9zm-9 0h6l-1 13H10L9 9z"></path></svg>
+                <span>Compétitions</span>
+            </h3>
+        </div>
+
+        <!-- CONTENU SCROLLABLE -->
+        <div style="overflow-y:auto;flex:1;min-height:0;">
+            <!-- SÉLECTEUR DISCIPLINE (en relief) -->
+            <div id="comp-modal-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+                    <button class="btn-choice active" onclick="filterCompModal('FU')" data-val="FU">FU</button>
+                    <button class="btn-choice" onclick="filterCompModal('DTL')" data-val="DTL">DTL</button>
+                    <button class="btn-choice" onclick="filterCompModal('TRAP1')" data-val="TRAP1">TRAP1</button>
+                    <button class="btn-choice" onclick="filterCompModal('PCH')" data-val="PCH">PCH</button>
+                    <button class="btn-choice" onclick="filterCompModal('CS')" data-val="CS">CS</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                    <button class="btn-choice" onclick="filterCompModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
+                    <button class="btn-choice" onclick="filterCompModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
+                </div>
+            </div>
+
+            <!-- ANNÉE EN COURS (label only, pas de boutons) -->
+            <div style="text-align:center; margin-bottom:14px;">
+                <span id="comp-year-label" style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Année 2026</span>
+            </div>
+
+            <!-- KPI : 4 cartes (2x2) -->
+            <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:16px;">
+                <div class="comp-kpi-card">
+                    <div class="comp-kpi-val" id="comp-kpi-count">0</div>
+                    <div class="comp-kpi-label">COMPET.</div>
+                </div>
+                <div class="comp-kpi-card">
+                    <div class="comp-kpi-val" id="comp-kpi-avg">—</div>
+                    <div class="comp-kpi-label">MOYENNE</div>
+                </div>
+                <div class="comp-kpi-card">
+                    <div class="comp-kpi-val" id="comp-kpi-best">—</div>
+                    <div class="comp-kpi-label">MEILLEUR</div>
+                </div>
+                <div class="comp-kpi-card" style="border:2px solid var(--accent);">
+                    <div class="comp-kpi-val" id="comp-kpi-global">—</div>
+                    <div class="comp-kpi-label">SCORE GLOBAL</div>
+                </div>
+            </div>
+
+            <!-- LISTE DES COMPÉTITIONS -->
+            <div id="comp-list">
+                <p class="loading-text">Chargement...</p>
+            </div>
+        </div>
+
+        <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeCompModal()">Fermer</button>
+    </div>
+</div>
+
+        <!-- Page Paramètres -->
+<div id="page-reglages" class="page">
+            <h2><svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Réglages</h2>
+            
+            <div class="card">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--text-label); text-transform:uppercase; letter-spacing:1px; text-align:center;">Apparence</h3>
+                
+                <div class="toggle-container">
+                    <span class="toggle-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Mode Sombre</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-dark-mode" onchange="toggleDarkMode(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-container">
+                    <span class="toggle-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Plein Soleil</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-high-vis" onchange="toggleHighVis(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div style="margin-top:20px;">
+                    <div class="label" style="margin-bottom:12px; text-align:center;">Couleur d'accent</div>
+                    <div class="color-selector">
+                        <div class="color-dot active" style="background:#f39c12" onclick="setAccent('#f39c12', this)"></div>
+                        <div class="color-dot" style="background:#3498db" onclick="setAccent('#3498db', this)"></div>
+                        <div class="color-dot" style="background:#2ecc71" onclick="setAccent('#2ecc71', this)"></div>
+                        <div class="color-dot" style="background:#e74c3c" onclick="setAccent('#e74c3c', this)"></div>
+                        <div class="color-dot" style="background:#9b59b6" onclick="setAccent('#9b59b6', this)"></div>
+                    </div>
+                </div>
+            </div>
+
+<hr class="settings-divider">
+            
+
+<!-- Boutons Harmonisés -->
+<button class="btn-settings" onclick="exportData()">
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    Exporter mes données
+</button>
+
+<hr class="settings-divider">
+
+<button class="btn-settings" onclick="importData()">
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
+    </svg>
+    Importer des données
+</button>
+
+<!-- Ligne de séparation -->
+<hr class="settings-divider">
+
+<button class="btn-settings delete" onclick="clearAllData()">
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    </svg>
+    Effacer TOUTES les données
+</button>
+
+<hr class="settings-divider">
+
+            <div class="card settings-footer">
+                <div style="font-weight:700; color:var(--text-primary); font-size:1rem; text-align:center;">
+                    Ball-Trap Tracker
+                </div>
+                <div style="color:var(--text-muted); font-size:0.85rem; margin:4px 0; text-align:center;">
+                    Version 1.5
+                </div>
+                <div style="color:var(--text-muted); font-size:0.8rem; margin-top:8px; font-style:italic; text-align:center;">
+                    Développé avec passion
+                </div>
+                <img src="bpdev-logo.svg" alt="BP-DEV" class="logo-bpdev-settings">
+                <div style="color:var(--text-label); font-size:0.68rem; margin-top:5px; font-weight:700; letter-spacing:0.5px; text-align:center;">
+                    © 2025–2026 — Tous droits réservés
+                </div>
+            </div>
+
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleFileImport(event)">
+        </div>
+        <!-- MODAL FUSIL -->
+        <div id="modal-fusil" class="modal-overlay" style="display:none;">
+            <div class="modal-box">
+                <h3>Nouvelle Arme</h3>
+                <div class="form-group"><label class="label">Nom / Modèle</label><input type="text" id="input-nom-fusil" class="input-neu" placeholder="Ex: Perazzi MX8"></div>
+                <div class="form-group"><label class="label">Type / Discipline</label><input type="text" id="input-type-fusil" class="input-neu" placeholder="Ex: FU"></div>
+                <div class="form-group"><label class="label">Type de Chokes</label>
+                    <div class="btn-group" id="choke-type-group" style="margin-bottom:12px;">
+                        <button type="button" class="btn-choice active" data-val="fixes"><svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Fixes</button>
+                        <button type="button" class="btn-choice" data-val="amovibles"><svg class="icon-sm" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg> Amovibles</button>
+                    </div>
+                </div>
+                <div id="chokes-fixes-fields">
+                    <div class="form-group"><label class="label">1er Canon</label><select id="input-choke-canon1" class="input-neu"><option value="">-- Sélectionner --</option><option value="Cylindrique (CYL ○)">Cylindrique - CYL ○</option><option value="1/4 - Improved Cylinder (IC ●○)">1/4 - IC ●○</option><option value="1/2 - Modified (MOD ●●○)">1/2 - MOD ●●○</option><option value="3/4 - Improved Modified (IM ●●●○)">3/4 - IM ●●●○</option><option value="Full (F ●●●)">Full - F ●●●</option><option value="Skeet (SK ◎)">Skeet - SK ◎</option><option value="Extra Full (EF ●●●●)">Extra Full - EF ●●●●</option></select></div>
+                    <div class="form-group"><label class="label">2ème Canon</label><select id="input-choke-canon2" class="input-neu"><option value="">-- Sélectionner --</option><option value="Cylindrique (CYL ○)">Cylindrique - CYL ○</option><option value="1/4 - Improved Cylinder (IC ●○)">1/4 - IC ●○</option><option value="1/2 - Modified (MOD ●●○)">1/2 - MOD ●●○</option><option value="3/4 - Improved Modified (IM ●●●○)">3/4 - IM ●●●○</option><option value="Full (F ●●●)">Full - F ●●●</option><option value="Skeet (SK ◎)">Skeet - SK ◎</option><option value="Extra Full (EF ●●●●)">Extra Full - EF ●●●●</option></select></div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="btn-annuler-fusil" class="btn-secondary" style="flex:1;">Annuler</button>
+                    <button id="btn-valider-fusil" class="btn-main" style="flex:1;">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL STAND -->
+        <div id="modal-stand" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:450px;">
+                <h3 id="stand-modal-title">Nouveau Stand</h3>
+                <input type="hidden" id="stand-id">
+                <div class="form-group"><label class="label" style="text-align:center;">Nom du stand</label><input type="text" id="stand-nom" class="input-neu" placeholder="Ex: BTC Argentan"></div>
+                <div class="form-group"><label class="label" style="text-align:center;">Adresse complète</label><input type="text" id="stand-adresse" class="input-neu" placeholder="Ex: Route de Falaise, 61200 Argentan">
+                 <!-- Bouton Afficher sur la carte -->
+                <button type="button" id="btn-show-map" class="btn-stand-harmonized" onclick="showStandMap()" style="display:none;">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Afficher sur la carte
+              </button>
+                <div class="form-row" style="gap:10px;">
+                    <div class="form-group half"><label class="label" style="text-align:center;">Latitude</label><input type="text" id="stand-lat" class="input-neu" placeholder="Ex: 48.7444"></div>
+                    <div class="form-group half"><label class="label" style="text-align:center;">Longitude</label><input type="text" id="stand-lon" class="input-neu" placeholder="Ex: -0.0167"></div>
+                </div>
+                <button type="button" class="btn-stand-harmonized" onclick="getCurrentPosition()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                    Utiliser ma position GPS actuelle
+                </button>
+                <div class="form-group"><label class="label" style="text-align:center;">Téléphone</label><input type="tel" id="stand-tel" class="input-neu" placeholder="Ex: 02 33 XX XX XX"></div>
+                <div class="form-group"><label class="label" style="text-align:center;">Notes (optionnel)</label><textarea id="stand-notes" class="input-neu" rows="2" placeholder="Ex: 5 postes, couvert, parking..."></textarea></div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="btn-stand-delete" class="btn-secondary" style="flex:1; color:var(--score-faible); display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>Supprimer</button>
+                    <button class="btn-secondary" style="flex:1;" onclick="closeStandModal()">Annuler</button>
+                    <button class="btn-main" style="flex:1;" onclick="saveStand()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALE ERREUR SAISIE -->
+<div id="modal-erreur-saisie" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:400px; text-align:center;">
+        <div style="margin-bottom:20px;">
+            <svg style="width:64px; height:64px; color:var(--score-faible); margin:0 auto;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+        <h3 style="color:var(--score-faible); margin-bottom:12px; font-size:1.3rem;">Erreur de saisie</h3>
+        <p id="erreur-saisie-message" style="color:var(--text-primary); margin-bottom:24px; font-size:1rem; line-height:1.5;"></p>
+        <button onclick="closeErreurModal()" class="btn-main" style="width:100%;">
+            <svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Recommencer la saisie
+        </button>
+    </div>
+</div>
+
+        <!-- ========================================
+             NOUVEAU MODAL : AJOUT RAPIDE STAND (Saisie)
+             ======================================== -->
+        <div id="modal-quick-stand" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:400px; text-align:center;">
+                
+                <h3 style="margin-bottom:16px;">📍 Ajout Rapide</h3>
+
+                <!-- 1. Champ Nom -->
+                <div class="form-group" style="text-align:left;">
+                    <label class="label">Nom du stand</label>
+                    <input type="text" id="quick-stand-name" class="input-neu" placeholder="Ex: BTC Argentan">
+                </div>
+
+                <!-- 2. Bouton GPS Simple -->
+                <button type="button" onclick="getQuickPosition()" class="btn-secondary" style="width:100%; margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <svg class="icon-sm" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+                    Position GPS actuelle
+                </button>
+
+                <!-- 3. Texte Rassurant -->
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px; line-height:1.4;">
+                    💡 <em>Vous pourrez modifier ce stand (adresse, tél...) plus tard dans la page<strong> Mes Stands</strong>.</em>
+                </p>
+
+                <!-- 4. Boutons -->
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-secondary" style="flex:1;" onclick="closeQuickStandModal()">Annuler</button>
+                    <button class="btn-main" style="flex:1;" onclick="saveQuickStand()">Enregistrer</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MODAL DE CONFIRMATION GÉNÉRIQUE -->
+<div id="modal-confirm" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:350px; text-align:center;">
+        <div style="margin-bottom:20px;">
+            <svg style="width:48px; height:48px; color:var(--score-faible); margin:0 auto;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+        <h3 style="color:var(--text-primary); margin-bottom:12px; font-size:1.2rem;">Confirmation</h3>
+        <p id="confirm-message" style="color:var(--text-muted); margin-bottom:24px; font-size:0.95rem; line-height:1.5;"></p>
+        <div style="display:flex; gap:10px;">
+            <button id="btn-confirm-cancel" class="btn-secondary" style="flex:1;">Annuler</button>
+            <button id="btn-confirm-ok" class="btn-main" style="flex:1; background:var(--score-faible);">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+        <!-- MODALE GESTION CARTOUCHES (Refonte Premium) -->
+        <div id="modal-cartouches" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column;">
+                <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="svg-fill" viewBox="0 0 767 577" style="width:28px;height:28px;"><path d="M109.57.67c-16.1 2.9-36.3 14.5-52.8 30.2-16.2 15.5-28.1 31.7-38.3 52.4-20.7 42-24.2 83.5-9.5 112.7 4.1 8 12.4 15.3 27.9 24.6 7.7 4.7 17.8 10.8 22.5 13.6 4.7 2.9 17.1 10.4 27.5 16.7 10.5 6.4 28.5 17.3 40 24.3 58.1 35.3 111 67.5 153 93 14.3 8.6 28.5 17.3 31.5 19.2s22.6 13.8 43.5 26.5c40.1 24.3 49.3 29.9 83 50.3 11.6 7 23 14 25.5 15.5s14 8.5 25.5 15.5c11.6 7 25.3 15.4 30.5 18.5 5.2 3.2 16.4 10 24.9 15.2l15.5 9.3 4.4 8.9c7.5 14.8 17.9 23.6 33.7 28.1 8.6 2.5 24.2 1.7 35.5-2 43.3-14 87.7-60.5 114.1-119.4 22.8-51.1 26.3-103.2 9-133.5-5.8-10.1-16.9-19.3-27.6-23.1-6-2.1-23.2-3.1-29.3-1.7-4 .9-4.9.8-10.5-2.2-3.4-1.8-26.7-14.1-51.7-27.3-25-13.3-68.2-36.1-96-50.8s-69.8-37-93.5-49.5c-57.4-30.3-128.3-67.9-137-72.5-3.8-2-27.2-14.4-52-27.5-24.7-13-61-32.2-80.5-42.6-19.5-10.3-37.7-19.6-40.5-20.7-5.9-2.2-20.4-3.1-28.3-1.7m527.7 272.2c17.9 9.5 36.1 19.1 40.3 21.3 4.3 2.2 7.8 4.2 7.8 4.5s-3.9 2.4-8.7 4.5c-10.8 4.9-23 12.8-34.8 22.6-39.8 33.2-74.6 94.2-84.1 147.4-1.9 11-2.5 39.4-1 50.3l.8 6.3-18.3-11.2c-10.1-6.2-20.6-12.5-23.4-14.2-27.6-16.3-37.7-23.2-40.6-27.3-4.6-6.7-8.7-16.1-10.6-24.4-2.5-10.7-2.5-37.8.1-51.5 5.7-30.6 23.2-67.6 44.3-93.5 8.5-10.5 24.3-25.5 33.8-32.2 20.1-14.1 34.7-19.5 52.9-19.7l8.9-.1zm89.1 30c3.3 1.4 2.8 1.4-8.2 1-10.4-.4-12.6-.2-20.9 2.2-19.3 5.6-38.5 18.1-58.4 38-16.9 17-28.2 31.9-41.2 54.6-26.4 45.9-37.8 99-28.7 134.3 2.1 8.4 7.4 19.2 12 24.6 2.8 3.2 3.2 4.1 1.6 3.2-3.1-1.6-9.8-10.4-13.2-17-12.3-24.7-10.3-66.7 5.1-107.9 17.2-46 47-87.6 80.9-112.9 10.8-8.1 32.2-18.8 41.5-20.8 8.5-1.8 24.5-1.4 29.5.7m6.5 18.8c7.4 2.9 16.9 12 20.8 20 14 29.1 7.3 78.5-17.3 126.5-39.7 77.8-108.5 120.9-141.3 88.7-5.8-5.7-8.6-10.4-12.1-20-17.3-48.4 18.5-140.7 73.4-189 27.8-24.5 55.9-34.1 76.5-26.2" fill="currentColor" stroke="none"/></svg> Mes Cartouches</h3>
+                
+                <!-- Ajout rapide -->
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <input type="text" id="input-new-cartouche" class="input-neu" style="flex:1; height:48px; border:2px solid var(--accent); border-radius:10px;" placeholder="Nouvelle cartouche...">
+                    <button onclick="addNewCartouche()" style="padding:0 20px; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; font-size:1.2rem;">+</button>
+                </div>
+
+                <div id="cartouches-container" style="overflow-y:auto; flex:1; margin-bottom:15px;"></div>
+                
+                <button class="btn-secondary" onclick="closeCartouchesManager()">Fermer</button>
+            </div>
+        </div>
+                <!-- MODALE TENUES -->
+        <div id="modal-tenues" class="modal-overlay" style="display:none;">
+            <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column;">
+                <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="svg-fill" viewBox="0 0 3000 2923" style="width:28px;height:28px;"><path d="M565.28 958.96v135.44l-191.32 196.36L0 916.84 442.08 298c19.2 35.48 50.44 120.92 82.68 324.84C550.16 784.08 564 942 565.28 958.96M3000 916.84l-373.96 373.92-191.28-196.36V958.96c1.44-16.96 15.12-174.84 40.56-336 32-204 63.44-289.36 82.6-324.84z" fill="currentColor"/><path d="M2498.84 251.6c-30.6 49.96-64.24 150.48-97.16 359.08-27.28 172.88-41.28 342-41.44 343.68v1899.4c-34.04 15.08-137.92 42.48-451.8 58.32-208 10.48-406.36 10.6-408.32 10.6s-200.2 0-408.28-10.6c-313.88-16-417.72-43.24-451.8-58.32V954.32c0-1.68-14.12-170.8-41.44-343.68-32.92-208.56-66.56-309.08-97.16-359.08L1056.84 0a448.9 448.9 0 0 0 61.56 132.4c56.4 82.36 168.64 180.56 381.6 180.56s325.2-98.2 381.84-180.52c27.61-40.48 48.4-85.2 61.56-132.4z" fill="currentColor"/></svg> Mes Tenues</h3>
+                
+                <div style="overflow-y:auto; flex:1; margin-bottom:15px;">
+                    
+                    <!-- Tenue Été -->
+                    <div class="tenue-section">
+                        <div class="tenue-header" style="text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Tenue Été</div>
+                        <textarea id="tenue-ete" class="input-neu" rows="3" placeholder="Veste légère, T-shirt, lunettes..." oninput="saveTenues()"></textarea>
+                    </div>
+
+                    <!-- Tenue Mi-saison -->
+                    <div class="tenue-section">
+                        <div class="tenue-header" style="text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>Tenue Mi-saison</div>
+                        <textarea id="tenue-mi-saison" class="input-neu" rows="3" placeholder="Veste intermédiaire, polaire..." oninput="saveTenues()"></textarea>
+                    </div>
+
+                    <!-- Tenue Hiver -->
+                    <div class="tenue-section">
+                        <div class="tenue-header" style="text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/><circle cx="12" cy="12" r="3"/></svg>Tenue Hiver</div>
+                        <textarea id="tenue-hiver" class="input-neu" rows="3" placeholder="Gros blouson, doudoune, sous-vêtements chauds..." oninput="saveTenues()"></textarea>
+                    </div>
+
+                </div>
+
+                <button class="btn-secondary" onclick="closeTenuesManager()">Fermer</button>
+            </div>
+        </div>
+
+<script>
+(function() {
+    'use strict';
+    
+    // Expose les fonctions globalement
+    window.openCartouchesManager = function() {
+        console.log('🔓 Ouverture modale cartouches');
+        document.getElementById('modal-cartouches').style.display = 'flex';
+        renderCartouchesList();
+    };
+
+    window.closeCartouchesManager = function() {
+        document.getElementById('modal-cartouches').style.display = 'none';
+        refreshCartoucheDropdown();
+    };
+
+    async function getCartouches() {
+        return await Storage.getCartouchesNames();
+    }
+
+    async function addAndSaveCartouche(name) {
+        await Storage.addCartouche(name);
+    }
+
+    async function removeCartoucheByIndex(index) {
+        const all = await Storage.getAllCartouches();
+        if (all[index]) {
+            await Storage.deleteCartouche(all[index].id);
+        }
+    }
+
+    async function refreshCartoucheDropdown() {
+        // Met à jour aussi bien le select natif que le custom select neumorphique
+        if (typeof updateCartoucheSelect === 'function') {
+            await updateCartoucheSelect();
+            return;
+        }
+        // Fallback si updateCartoucheSelect n'est pas encore disponible
+        const cartouches = await getCartouches();
+        const select = document.getElementById('input-cartouche');
+        if (!select) return;
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- Sélectionner une cartouche --</option>';
+        cartouches.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            select.appendChild(opt);
+        });
+        if (cartouches.includes(currentVal)) select.value = currentVal;
+    }
+
+    async function renderCartouchesList() {
+        const container = document.getElementById('cartouches-container');
+        const allCart = await Storage.getAllCartouches();
+        container.innerHTML = '';
+
+        if (allCart.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px;">Aucune cartouche enregistrée.</p>';
+            return;
+        }
+
+        allCart.forEach((c, index) => {
+            const row = document.createElement('div');
+            row.className = 'cartouche-row';
+            row.innerHTML = `
+                <span style="color:var(--text-primary); font-weight:600;">${c.name}</span>
+                <button onclick="deleteCartouche(${index})" style="padding:6px 8px; background:transparent; border:none; cursor:pointer; opacity:0.6; display:flex; align-items:center; justify-content:center;"><svg viewBox=\"0 0 24 24\" style=\"width:18px;height:18px;stroke:var(--score-faible);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;\"><polyline points=\"3 6 5 6 21 6\"></polyline><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"></path></svg></button>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    window.addNewCartouche = async function() {
+        const input = document.getElementById('input-new-cartouche');
+        const val = input.value.trim();
+        if (!val) return;
+
+        const cartouches = await getCartouches();
+        if (!cartouches.includes(val)) {
+            await addAndSaveCartouche(val);
+            await renderCartouchesList();
+            await refreshCartoucheDropdown();
+            input.value = '';
+        } else {
+            showToast('Cette cartouche existe déjà !');
+        }
+    };
+
+    window.deleteCartouche = async function(index) {
+        await removeCartoucheByIndex(index);
+        await renderCartouchesList();
+        await refreshCartoucheDropdown();
+    };
+
+    console.log('✅ Module gestion cartouches chargé (IndexedDB)');
+})();
+
+    // ========================================
+    // GESTION DES TENUES
+    // ✅ TOUT via IndexedDB maintenant
+    // ========================================
+    window.openTenuesManager = function() {
+        document.getElementById('modal-tenues').style.display = 'flex';
+        loadTenues();
+    };
+
+    window.closeTenuesManager = function() {
+        document.getElementById('modal-tenues').style.display = 'none';
+        if (typeof updateTenueSelect === 'function') updateTenueSelect();
+    };
+
+    window.loadTenues = async function() {
+        const tenues = await Storage.getTenues();
+        document.getElementById('tenue-ete').value = tenues.ete || '';
+        document.getElementById('tenue-mi-saison').value = tenues['mi-saison'] || '';
+        document.getElementById('tenue-hiver').value = tenues.hiver || '';
+    };
+
+    window.saveTenues = async function() {
+        const tenues = {
+            ete: document.getElementById('tenue-ete').value,
+            'mi-saison': document.getElementById('tenue-mi-saison').value,
+            hiver: document.getElementById('tenue-hiver').value
+        };
+        await Storage.saveTenues(tenues);
+        if (typeof updateTenueSelect === 'function') updateTenueSelect();
+    };
+</script>
+
+    <!-- Time Lock (version bêta) — DOIT être chargé en premier -->
+
+   <script src="js/storage.js"></script>
+    <script src="js/params.js"></script> 
+    <script src="js/main.js"></script>
+    <script src="js/ratelier.js"></script>
+    <script src="js/stands.js"></script>
+    <script src="js/meteo.js"></script>
+    <script src="js/saisie.js"></script>
+    <script src="js/stats.js"></script>
+    <!-- Service Worker PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW non enregistré:', err));
+        }
+    </script>
+</body>
+</html>
