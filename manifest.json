@@ -2,7 +2,7 @@
     "name": "Ball-Trap Tracker",
     "short_name": "BallTrap",
     "description": "Suivi de performances Ball-Trap — Séries, Compétitions, Badges",
-    "start_url": "/index.html",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#d1d8e0",
     "theme_color": "#3a7bd5",
