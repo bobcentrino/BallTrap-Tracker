@@ -58,11 +58,16 @@ window.entrerApp = function() {
     console.log("🚀 Lancement de l'application...");
     const splash = document.querySelector('.page-splash');
     const nav = document.getElementById('main-nav');
+    const fabReglages = document.getElementById('btn-reglages');
+    const fabTheme = document.getElementById('btn-theme-cycle');
     
     if (splash) splash.classList.add('hidden');
     setTimeout(() => {
         if (splash) splash.style.display = 'none';
         if (nav) nav.style.display = 'flex';
+        if (fabReglages) fabReglages.classList.remove('hidden-default');
+        if (fabTheme) fabTheme.classList.remove('hidden-default');
+        if (typeof updateThemeIcon === 'function') updateThemeIcon();
         window.router.navigate('page-saisie');
     }, 600);
 };
