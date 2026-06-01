@@ -5,22 +5,22 @@
 
 const CACHE_NAME = 'balltrap-v1.5.2';
 const ASSETS = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/main.js',
-    '/js/saisie.js',
-    '/js/stats.js',
-    '/js/storage.js',
-    '/js/params.js',
-    '/js/meteo.js',
-    '/js/stands.js',
-    '/js/ratelier.js',
-    '/manifest.json',
-    '/icon-192.png',
-    '/icon-512.png',
-    '/apple-touch-icon.png',
-    '/bpdev-logo.svg'
+    './',
+    './index.html',
+    './css/style.css',
+    './js/main.js',
+    './js/saisie.js',
+    './js/stats.js',
+    './js/storage.js',
+    './js/params.js',
+    './js/meteo.js',
+    './js/stands.js',
+    './js/ratelier.js',
+    './manifest.json',
+    './icon-192.png',
+    './icon-512.png',
+    './apple-touch-icon.png',
+    './bpdev-logo.svg'
 ];
 
 // Installation — mettre en cache les assets
@@ -56,7 +56,7 @@ self.addEventListener('fetch', (event) => {
         }).catch(() => {
             // Fallback hors ligne pour la page principale
             if (event.request.mode === 'navigate') {
-                return caches.match('/index.html');
+                return caches.match('./index.html');
             }
         })
     );
