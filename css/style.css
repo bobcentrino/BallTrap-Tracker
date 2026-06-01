@@ -100,6 +100,7 @@ h2 { font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
     max-width: 600px;
     margin: 0 auto;
     min-height: 100dvh;
+    padding-top: calc(12px + env(safe-area-inset-top));
     padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
@@ -135,6 +136,47 @@ h2 { font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
     opacity: 0;
     pointer-events: none;
 }
+
+/* ---- BOUTONS FLOTTANTS CORNERS (FAB) ---- */
+.fab-corner {
+    position: fixed;
+    top: calc(12px + env(safe-area-inset-top));
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 14px;
+    background: var(--bg);
+    color: var(--accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--neu-out-md);
+    transition: all 0.2s ease;
+    z-index: 1001;
+}
+.fab-left  { left: calc(50% - 300px + 12px); }
+.fab-right { right: calc(50% - 300px + 12px); }
+@media (max-width: 600px) {
+    .fab-left  { left: 12px; }
+    .fab-right { right: 12px; }
+}
+.fab-corner:active {
+    box-shadow: var(--neu-in);
+    transform: scale(0.92);
+}
+.fab-corner svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+:root.high-vis .fab-corner svg { stroke: var(--accent); }
+:root.dark-mode .fab-corner svg { stroke: var(--accent); }
+.hidden-default { display: none !important; }
 
 .logo-area {
     text-align: center;
@@ -738,12 +780,17 @@ input:checked + .toggle-slider:before { transform: translateX(24px); background-
 /* Boutons Vent */
 .btn-vent {
     background: var(--bg) !important; border: none !important; border-radius: var(--radius-md) !important;
-    padding: 0 16px !important; cursor: pointer !important; transition: all 0.2s ease !important;
-    box-shadow: var(--neu-out-sm) !important; display: flex !important; flex-direction: row !important;
-    align-items: center !important; justify-content: center !important; gap: 8px !important;
-    color: var(--text-primary) !important; font-family: inherit !important; font-size: 1rem !important;
-    font-weight: 800 !important; width: 100% !important; height: 56px !important;
-    min-height: 56px !important; max-height: 56px !important;
+    padding: 8px 6px !important; cursor: pointer !important; transition: all 0.2s ease !important;
+    box-shadow: var(--neu-out-sm) !important; display: flex !important; flex-direction: column !important;
+    align-items: center !important; justify-content: center !important; gap: 4px !important;
+    color: var(--text-primary) !important; font-family: inherit !important; font-size: 0.8rem !important;
+    font-weight: 800 !important; width: 100% !important; height: auto !important;
+    min-height: 48px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+.btn-vent .vent-icon {
+    width: 20px !important; height: 20px !important; margin-bottom: 0 !important; flex-shrink: 0 !important;
 }
 
 .btn-vent span:first-child { font-size: 1.3rem !important; display: inline !important; margin-bottom: 0 !important; }
