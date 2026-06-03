@@ -2317,10 +2317,11 @@ hr.settings-divider { border: 0; height: 1px; background: var(--shadow-dark); op
 .detail-header-tile {
     background: var(--bg);
     border-radius: var(--radius-md);
-    box-shadow: var(--neu-out-md);
+    box-shadow: var(--neu-out-sm);
     padding: 18px 20px;
     text-align: center;
     margin-bottom: 16px;
+    margin-top: 10px;
 }
 .detail-header-tile .dht-discipline {
     display: inline-block;
