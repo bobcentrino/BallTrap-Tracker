@@ -89,6 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentHistoriqueFilter = 'FU';
 
+    // Discipline class helper (used by detail modals)
+    function discClassHelper(disc) {
+        if (!disc) return '';
+        return disc.toLowerCase().replace(/\s+/g, '').replace(/olympique/g, '');
+    }
+
     window.filterHistorique = function(discipline) {
         currentHistoriqueFilter = discipline;
         
@@ -695,15 +701,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========================================
     window.openCompDetail = async function(comp) {
         const modal = document.getElementById('modal-comp-detail');
-        const titleEl = document.getElementById('comp-detail-title');
-        const scoreEl = document.getElementById('comp-detail-score');
+        const headerEl = document.getElementById('comp-detail-header');
         const seriesContainer = document.getElementById('comp-detail-series');
+        const sectionLabel = document.getElementById('comp-detail-section-label');
         if (!modal || !seriesContainer) return;
 
         const pct = comp.scoreMaxCumul ? Math.round((comp.scoreCumul / comp.scoreMaxCumul) * 100) : 0;
+        const pctClass = pct >= 85 ? 'excellent' : pct >= 70 ? 'good' : 'poor';
+        const dClass = discClassHelper(comp.disc);
 
-        titleEl.textContent = `${comp.name || comp.disc + ' - ' + comp.mode + ' plateaux'} — ${formatDateFR(comp.startDate)}`;
-        scoreEl.textContent = `Score total : ${comp.scoreCumul} / ${comp.scoreMaxCumul} (${pct}%)`;
+        // Grosse tuile header
+        headerEl.innerHTML = `
+            <div class="detail-header-tile">
+                <div class="dht-discipline ${dClass}">${comp.disc || 'Compétition'}</div>
+                <div class="dht-title">${comp.name || comp.disc + ' - ' + comp.mode + ' plateaux'}</div>
+                <div class="dht-title" style="font-size:0.85rem; font-weight:600; margin-top:2px;">${formatDateFR(comp.startDate)}</div>
+                <div class="dht-score-big">${comp.scoreCumul} / ${comp.scoreMaxCumul}</div>
+                <div class="dht-pct ${pctClass}">${pct}%</div>
+            </div>
+        `;
+
+        if (sectionLabel) sectionLabel.textContent = 'Séries (' + (comp.series || []).length + ')';
 
         seriesContainer.innerHTML = '';
 
@@ -720,11 +738,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const content = document.createElement('div');
             content.className = 'modal-serie-content';
             content.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-bottom:6px;">
                     <span style="font-weight:800; color:var(--text-primary);">Série ${index + 1}</span>
                     <span style="font-weight:800; color:var(--accent); font-size:1.1rem;">${serie.score}/${serie.max} (${percent}%)</span>
                 </div>
-                <div style="font-size:0.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
+                <div style="font-size:0.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:2px; text-align:center;">
                     <span>${formatDateFR(serie.date)} — ${serie.meteo || 'N/A'} — ${serie.vent || 'N/A'}</span>
                     <span>${serie.fusil || 'Non renseigné'}${serie.chokes ? ' — ' + serie.chokes : ''}</span>
                     <span>${serie.cartouche || 'Non renseigné'} — ${serie.lieu || 'Non renseigné'}${serie.tenue ? ' — ' + serie.tenue : ''}</span>
@@ -755,18 +773,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========================================
     window.openTrainDetail = function(discNode) {
         const modal = document.getElementById('modal-train-detail');
-        const titleEl = document.getElementById('train-detail-title');
-        const scoreEl = document.getElementById('train-detail-score');
+        const headerEl = document.getElementById('train-detail-header');
         const seriesContainer = document.getElementById('train-detail-series');
+        const sectionLabel = document.getElementById('train-detail-section-label');
         if (!modal || !seriesContainer) return;
 
         const nbSeries = discNode.series.length;
         const totalScore = discNode.series.reduce((s, serie) => s + (serie.score || 0), 0);
         const totalMax = discNode.series.reduce((s, serie) => s + (serie.max || 0), 0);
         const avgPct = totalMax ? Math.round((totalScore / totalMax) * 100) : 0;
+        const pctClass = avgPct >= 85 ? 'excellent' : avgPct >= 70 ? 'good' : 'poor';
+        const dClass = discClassHelper(discNode.label);
 
-        titleEl.textContent = discNode.label;
-        scoreEl.textContent = `${nbSeries} série${nbSeries > 1 ? 's' : ''} — Score cumulé : ${totalScore} / ${totalMax} (${avgPct}%)`;
+        // Grosse tuile header
+        headerEl.innerHTML = `
+            <div class="detail-header-tile">
+                <div class="dht-discipline ${dClass}">${discNode.label}</div>
+                <div class="dht-score-big">${totalScore} / ${totalMax}</div>
+                <div class="dht-pct ${pctClass}">${avgPct}%</div>
+                <div class="dht-score">${nbSeries} série${nbSeries > 1 ? 's' : ''} enregistrée${nbSeries > 1 ? 's' : ''}</div>
+            </div>
+        `;
+
+        if (sectionLabel) sectionLabel.textContent = 'Séries (' + nbSeries + ')';
 
         seriesContainer.innerHTML = '';
 
@@ -780,12 +809,12 @@ document.addEventListener('DOMContentLoaded', () => {
             content.className = 'modal-serie-content';
             const displayName = serie.sessionName || '';
             content.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-bottom:6px;">
                     <span style="font-weight:800; color:var(--text-primary);">Série ${index + 1}</span>
                     <span style="font-weight:800; color:var(--accent); font-size:1.1rem;">${serie.score}/${serie.max} (${percent}%)</span>
                 </div>
                 ${displayName ? `<div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">${displayName}</div>` : ''}
-                <div style="font-size:0.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
+                <div style="font-size:0.82rem; color:var(--text-muted); display:flex; flex-direction:column; gap:2px; text-align:center;">
                     <span>${formatDateFR(serie.date)} — ${serie.meteo || 'N/A'} — ${serie.vent || 'N/A'}</span>
                     <span>${serie.fusil || 'Non renseigné'}${serie.chokes ? ' — ' + serie.chokes : ''}</span>
                     <span>${serie.cartouche || 'Non renseigné'} — ${serie.lieu || 'Non renseigné'}${serie.tenue ? ' — ' + serie.tenue : ''}</span>
