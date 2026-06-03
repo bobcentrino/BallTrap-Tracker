@@ -22,7 +22,7 @@
         .vent-icon { width: 24px; height: 24px; margin-bottom: 4px; }
         svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
         /* BOUTONS FORMAT */
-        .btn-format { padding:12px 8px; border:none; border-radius:10px; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; transition:all 0.2s; background:var(--bg); color:var(--text-muted); box-shadow:var(--neu-out-sm); }
+        .btn-format { padding:12px 12px; border:none; border-radius:10px; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; transition:all 0.2s; background:var(--bg); color:var(--text-muted); box-shadow:var(--neu-out-sm); }
         .btn-format.active { background:var(--accent); color:#fff; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
     </style>
 </head>
@@ -78,12 +78,12 @@
             <h2><svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Nouvelle Série</h2>
             <form id="form-saisie" novalidate>
                 <!-- Discipline -->
-                <div id="disc-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
+                <div id="disc-group" style="background:var(--bg); padding:16px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
                     
                     <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">DISCIPLINE</div>
             
                     <!-- Ligne 1 : 5 boutons -->
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(58px, 1fr)); gap:10px; margin-bottom:10px;">
+                    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:10px;">
                         <button type="button" class="btn-choice active" data-val="FU">FU</button>
                         <button type="button" class="btn-choice" data-val="DTL">DTL</button>
                         <button type="button" class="btn-choice" data-val="TRAP1">TRAP1</button>
@@ -228,8 +228,8 @@
         </div> <!-- Fin page-saisie -->
 
         <!-- MODALE ÉQUIPEMENT -->
-        <div id="modal-equip" class="modal-overlay" style="display:none;">
-            <div class="modal-box" style="max-width:450px; max-height:85vh; display:flex; flex-direction:column;">
+        <div id="modal-equip" class="modal-overlay modal-page" style="display:none;">
+            <div class="modal-box" style="display:flex; flex-direction:column;">
                 <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent);"><svg style="width:22px;height:22px;vertical-align:middle;margin-right:6px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>Équipement</h3>
                 
                 <div style="overflow-y:auto; flex:1; padding-right:5px;">
@@ -377,27 +377,27 @@
         </div>
 
         <!-- MODALE DÉTAIL COMPÉTITION (historique) -->
-        <div id="modal-comp-detail" class="modal-overlay" style="display:none;">
+        <div id="modal-comp-detail" class="modal-overlay modal-page" style="display:none;">
             <div class="modal-box" style="max-width:500px; max-height:85vh; display:flex; flex-direction:column;">
                 <h3 style="margin:0 0 15px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M8 2h8v8a4 4 0 0 1-8 0V2z"/><path d="M6 4H4v3a2 2 0 0 0 2 2"/><path d="M18 4h2v3a2 2 0 0 1-2 2"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Compétition</h3>
-                <div id="comp-detail-header" style="background:var(--bg); padding:12px 16px; border-radius:12px; box-shadow:var(--neu-out-sm); margin-bottom:15px; text-align:center;">
-                    <div id="comp-detail-title" style="font-weight:900; font-size:1rem; color:var(--text-primary);"></div>
-                    <div id="comp-detail-score" style="font-size:0.95rem; color:var(--accent); font-weight:700; margin-top:4px;"></div>
+                <div id="comp-detail-scroll" style="overflow-y:auto; flex:1; min-height:0; display:flex; flex-direction:column; padding:0 16px 16px;">
+                    <div id="comp-detail-header"></div>
+                    <div class="detail-section-label" id="comp-detail-section-label">Séries</div>
+                    <div id="comp-detail-series" style="display:flex; flex-direction:column; gap:10px;"></div>
                 </div>
-                <div id="comp-detail-series" style="overflow-y:auto; flex:1; min-height:0; display:flex; flex-direction:column;"></div>
                 <button type="button" class="btn-secondary" style="margin-top:15px; flex-shrink:0;" onclick="document.getElementById('modal-comp-detail').style.display='none'">Fermer</button>
             </div>
         </div>
 
         <!-- MODALE DÉTAIL ENTRAÎNEMENT (historique) -->
-        <div id="modal-train-detail" class="modal-overlay" style="display:none;">
+        <div id="modal-train-detail" class="modal-overlay modal-page" style="display:none;">
             <div class="modal-box" style="max-width:500px; max-height:85vh; display:flex; flex-direction:column;">
                 <h3 style="margin:0 0 15px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Entraînement</h3>
-                <div id="train-detail-header" style="background:var(--bg); padding:12px 16px; border-radius:12px; box-shadow:var(--neu-out-sm); margin-bottom:15px; text-align:center;">
-                    <div id="train-detail-title" style="font-weight:900; font-size:1rem; color:var(--text-primary);"></div>
-                    <div id="train-detail-score" style="font-size:0.95rem; color:var(--accent); font-weight:700; margin-top:4px;"></div>
+                <div id="train-detail-scroll" style="overflow-y:auto; flex:1; min-height:0; display:flex; flex-direction:column; padding:0 16px 16px;">
+                    <div id="train-detail-header"></div>
+                    <div class="detail-section-label" id="train-detail-section-label">Séries</div>
+                    <div id="train-detail-series" style="display:flex; flex-direction:column; gap:10px;"></div>
                 </div>
-                <div id="train-detail-series" style="overflow-y:auto; flex:1; min-height:0; display:flex; flex-direction:column;"></div>
                 <button type="button" class="btn-secondary" style="margin-top:15px; flex-shrink:0;" onclick="document.getElementById('modal-train-detail').style.display='none'">Fermer</button>
             </div>
         </div>
@@ -407,12 +407,12 @@
             <h2><svg class="icon-lg" style="margin-right:8px;" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Historique</h2>
         
             <!-- Filtres par discipline (STYLE STATS) -->
-            <div id="historique-disc-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
+            <div id="historique-disc-group" style="background:var(--bg); padding:16px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:20px;">
     
                 <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">DISCIPLINE</div>
             
                 <!-- Ligne 1 : 5 boutons -->
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(58px, 1fr)); gap:10px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:10px;">
                     <button class="btn-choice active" onclick="filterHistorique('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterHistorique('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterHistorique('TRAP1')" data-val="TRAP1">TRAP1</button>
@@ -476,7 +476,7 @@
             </div>
            </div>         <!-- MODALE ARMURERIE (Fusils) -->
         <div id="modal-armurerie" class="modal-overlay" style="display:none;">
-            <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column;">
+            <div class="modal-box" style="display:flex; flex-direction:column;">
                 <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="icon-lg svg-fill" viewBox="0 0 687.67 801.25" style="width:38px;height:38px;"><path d="M683.75,668.75l-168.75-168.75,11.25-11.25h33.75c7.5,0,13.75-6.25,13.75-13.75s-6.25-13.75-13.75-13.75h-33.75l-155-156.25L120,55l12.5-12.5c5-5,5-13.75,0-20-5-5-13.75-5-20,0l-12.5,12.5L68.75,3.75c-5-5-13.75-5-20,0L3.75,50c-5,5-5,13.75,0,20l291.25,291.25-3.75,3.75c-5,5-7.5,12.5-7.5,20s2.5,13.75,7.5,20l95,95-16.25,16.25c-7.5,7.5-12.5,18.75-12.5,28.75,0,11.25,3.75,21.25,12.5,28.75l26.25,26.25c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l8.75-8.75,98.75,173.75c0,1.25,1.25,2.5,2.5,2.5l30,30c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l108.75-108.75c3.75-6.25,3.75-15-1.25-20ZM390,553.75c-2.5-2.5-3.75-6.25-3.75-10s1.25-7.5,3.75-10h0l16.25-16.25,26.25,26.25-13.75,13.75-12.5,12.5-16.25-16.25Z" fill="currentColor" stroke="none"/></svg> Mes Fusils</h3>
                 
                 <div id="armurerie-list" class="armurerie-list" style="overflow-y:auto; flex:1; margin-bottom:15px;"></div>
@@ -485,7 +485,7 @@
                     <svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Ajouter une arme
                 </button>
                 
-                <button class="btn-secondary" onclick="closeArmurerieManager()">Fermer</button>
+                <button class="btn-secondary" style="width:100%;" onclick="closeArmurerieManager()">Fermer</button>
             </div>
         </div>
             
@@ -510,16 +510,16 @@
     </h2>
 
     <!-- ═══════ SÉLECTEUR 7 DISCIPLINES ═══════ -->
-    <div id="stats-disc-group" style="background:var(--bg); padding:20px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:18px;">
+    <div id="stats-disc-group" style="background:var(--bg); padding:16px; border-radius:16px; box-shadow:var(--neu-out-sm); margin-bottom:18px;">
         <div style="font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.85rem; margin-bottom:15px; letter-spacing:0.5px; text-align:center;">DISCIPLINE</div>
-        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-bottom:8px;">
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:8px;">
             <button class="btn-choice active" onclick="filterStats('FU')" data-val="FU">FU</button>
             <button class="btn-choice" onclick="filterStats('DTL')" data-val="DTL">DTL</button>
             <button class="btn-choice" onclick="filterStats('TRAP1')" data-val="TRAP1">TRAP1</button>
             <button class="btn-choice" onclick="filterStats('PCH')" data-val="PCH">PCH</button>
             <button class="btn-choice" onclick="filterStats('CS')" data-val="CS">CS</button>
         </div>
-        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;">
+        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
             <button class="btn-choice" onclick="filterStats('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
             <button class="btn-choice" onclick="filterStats('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
         </div>
@@ -637,7 +637,7 @@
     <div class="modal-box modal-stats">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <svg class="icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                 <span id="prog-title">Moyenne FU</span>
             </h3>
@@ -687,7 +687,7 @@
             </div>
         </div>
 
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeStatsModal('progression')">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeStatsModal('progression')">Fermer</button>
     </div>
 </div>
 
@@ -696,24 +696,24 @@
     <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <svg class="icon-sm svg-fill" viewBox="0 0 687.67 801.25" style="width:20px;height:20px;"><path d="M683.75,668.75l-168.75-168.75,11.25-11.25h33.75c7.5,0,13.75-6.25,13.75-13.75s-6.25-13.75-13.75-13.75h-33.75l-155-156.25L120,55l12.5-12.5c5-5,5-13.75,0-20-5-5-13.75-5-20,0l-12.5,12.5L68.75,3.75c-5-5-13.75-5-20,0L3.75,50c-5,5-5,13.75,0,20l291.25,291.25-3.75,3.75c-5,5-7.5,12.5-7.5,20s2.5,13.75,7.5,20l95,95-16.25,16.25c-7.5,7.5-12.5,18.75-12.5,28.75,0,11.25,3.75,21.25,12.5,28.75l26.25,26.25c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l8.75-8.75,98.75,173.75c0,1.25,1.25,2.5,2.5,2.5l30,30c2.5,2.5,6.25,3.75,10,3.75s7.5-1.25,10-3.75l108.75-108.75c3.75-6.25,3.75-15-1.25-20ZM390,553.75c-2.5-2.5-3.75-6.25-3.75-10s1.25-7.5,3.75-10h0l16.25-16.25,26.25,26.25-13.75,13.75-12.5,12.5-16.25-16.25Z" fill="currentColor" stroke="none"/></svg>
                 <span>Fusil & Chokes</span>
             </h3>
         </div>
 
         <!-- CONTENU SCROLLABLE -->
-        <div style="overflow-y:auto;flex:1;min-height:0;">
+        <div style="overflow-y:auto;flex:1;min-height:0;padding:0 16px;">
             <!-- SÉLECTEUR DISCIPLINE (en relief) -->
-            <div id="fusil-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+            <div id="fusil-disc-group" style="padding:14px 0; border-bottom:1px solid var(--shadow-dark); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:6px;">
                     <button class="btn-choice active" onclick="filterFusilModal('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterFusilModal('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterFusilModal('TRAP1')" data-val="TRAP1">TRAP1</button>
                     <button class="btn-choice" onclick="filterFusilModal('PCH')" data-val="PCH">PCH</button>
                     <button class="btn-choice" onclick="filterFusilModal('CS')" data-val="CS">CS</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
                     <button class="btn-choice" onclick="filterFusilModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
                     <button class="btn-choice" onclick="filterFusilModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
                 </div>
@@ -733,7 +733,7 @@
         </div>
 
         <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeFusilModal()">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeFusilModal()">Fermer</button>
     </div>
 </div>
 
@@ -742,24 +742,24 @@
     <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span>Météo & Vent</span>
             </h3>
         </div>
 
         <!-- CONTENU SCROLLABLE -->
-        <div style="overflow-y:auto;flex:1;min-height:0;">
+        <div style="overflow-y:auto;flex:1;min-height:0;padding:0 16px;">
             <!-- SÉLECTEUR DISCIPLINE (en relief) -->
-            <div id="meteo-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+            <div id="meteo-disc-group" style="padding:14px 0; border-bottom:1px solid var(--shadow-dark); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:6px;">
                     <button class="btn-choice active" onclick="filterMeteoModal('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterMeteoModal('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterMeteoModal('TRAP1')" data-val="TRAP1">TRAP1</button>
                     <button class="btn-choice" onclick="filterMeteoModal('PCH')" data-val="PCH">PCH</button>
                     <button class="btn-choice" onclick="filterMeteoModal('CS')" data-val="CS">CS</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
                     <button class="btn-choice" onclick="filterMeteoModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
                     <button class="btn-choice" onclick="filterMeteoModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
                 </div>
@@ -779,7 +779,7 @@
         </div>
 
         <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeMeteoModal()">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeMeteoModal()">Fermer</button>
     </div>
 </div>
 
@@ -788,24 +788,24 @@
     <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <svg class="icon-sm svg-fill" viewBox="0 0 767 577" style="width:20px;height:20px;"><path d="M109.57.67c-16.1 2.9-36.3 14.5-52.8 30.2-16.2 15.5-28.1 31.7-38.3 52.4-20.7 42-24.2 83.5-9.5 112.7 4.1 8 12.4 15.3 27.9 24.6 7.7 4.7 17.8 10.8 22.5 13.6 4.7 2.9 17.1 10.4 27.5 16.7 10.5 6.4 28.5 17.3 40 24.3 58.1 35.3 111 67.5 153 93 14.3 8.6 28.5 17.3 31.5 19.2s22.6 13.8 43.5 26.5c40.1 24.3 49.3 29.9 83 50.3 11.6 7 23 14 25.5 15.5s14 8.5 25.5 15.5c11.6 7 25.3 15.4 30.5 18.5 5.2 3.2 16.4 10 24.9 15.2l15.5 9.3 4.4 8.9c7.5 14.8 17.9 23.6 33.7 28.1 8.6 2.5 24.2 1.7 35.5-2 43.3-14 87.7-60.5 114.1-119.4 22.8-51.1 26.3-103.2 9-133.5-5.8-10.1-16.9-19.3-27.6-23.1-6-2.1-23.2-3.1-29.3-1.7-4 .9-4.9.8-10.5-2.2-3.4-1.8-26.7-14.1-51.7-27.3-25-13.3-68.2-36.1-96-50.8s-69.8-37-93.5-49.5c-57.4-30.3-128.3-67.9-137-72.5-3.8-2-27.2-14.4-52-27.5-24.7-13-61-32.2-80.5-42.6-19.5-10.3-37.7-19.6-40.5-20.7-5.9-2.2-20.4-3.1-28.3-1.7m527.7 272.2c17.9 9.5 36.1 19.1 40.3 21.3 4.3 2.2 7.8 4.2 7.8 4.5s-3.9 2.4-8.7 4.5c-10.8 4.9-23 12.8-34.8 22.6-39.8 33.2-74.6 94.2-84.1 147.4-1.9 11-2.5 39.4-1 50.3l.8 6.3-18.3-11.2c-10.1-6.2-20.6-12.5-23.4-14.2-27.6-16.3-37.7-23.2-40.6-27.3-4.6-6.7-8.7-16.1-10.6-24.4-2.5-10.7-2.5-37.8.1-51.5 5.7-30.6 23.2-67.6 44.3-93.5 8.5-10.5 24.3-25.5 33.8-32.2 20.1-14.1 34.7-19.5 52.9-19.7l8.9-.1zm89.1 30c3.3 1.4 2.8 1.4-8.2 1-10.4-.4-12.6-.2-20.9 2.2-19.3 5.6-38.5 18.1-58.4 38-16.9 17-28.2 31.9-41.2 54.6-26.4 45.9-37.8 99-28.7 134.3 2.1 8.4 7.4 19.2 12 24.6 2.8 3.2 3.2 4.1 1.6 3.2-3.1-1.6-9.8-10.4-13.2-17-12.3-24.7-10.3-66.7 5.1-107.9 17.2-46 47-87.6 80.9-112.9 10.8-8.1 32.2-18.8 41.5-20.8 8.5-1.8 24.5-1.4 29.5.7m6.5 18.8c7.4 2.9 16.9 12 20.8 20 14 29.1 7.3 78.5-17.3 126.5-39.7 77.8-108.5 120.9-141.3 88.7-5.8-5.7-8.6-10.4-12.1-20-17.3-48.4 18.5-140.7 73.4-189 27.8-24.5 55.9-34.1 76.5-26.2" fill="currentColor"/></svg>
                 <span>Par cartouche</span>
             </h3>
         </div>
 
         <!-- CONTENU SCROLLABLE -->
-        <div style="overflow-y:auto;flex:1;min-height:0;">
+        <div style="overflow-y:auto;flex:1;min-height:0;padding:0 16px;">
             <!-- SÉLECTEUR DISCIPLINE (en relief) -->
-            <div id="cartouche-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+            <div id="cartouche-disc-group" style="padding:14px 0; border-bottom:1px solid var(--shadow-dark); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:6px;">
                     <button class="btn-choice active" onclick="filterCartoucheModal('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterCartoucheModal('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterCartoucheModal('TRAP1')" data-val="TRAP1">TRAP1</button>
                     <button class="btn-choice" onclick="filterCartoucheModal('PCH')" data-val="PCH">PCH</button>
                     <button class="btn-choice" onclick="filterCartoucheModal('CS')" data-val="CS">CS</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
                     <button class="btn-choice" onclick="filterCartoucheModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
                     <button class="btn-choice" onclick="filterCartoucheModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
                 </div>
@@ -819,7 +819,7 @@
         </div>
 
         <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeCartoucheModal()">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeCartoucheModal()">Fermer</button>
     </div>
 </div>
 
@@ -828,24 +828,24 @@
     <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <svg class="icon-sm svg-fill" viewBox="0 0 3000 2923" style="width:20px;height:20px;"><path d="M565.28 958.96v135.44l-191.32 196.36L0 916.84 442.08 298c19.2 35.48 50.44 120.92 82.68 324.84C550.16 784.08 564 942 565.28 958.96M3000 916.84l-373.96 373.92-191.28-196.36V958.96c1.44-16.96 15.12-174.84 40.56-336 32-204 63.44-289.36 82.6-324.84z" fill="currentColor"/><path d="M2498.84 251.6c-30.6 49.96-64.24 150.48-97.16 359.08-27.28 172.88-41.28 342-41.44 343.68v1899.4c-34.04 15.08-137.92 42.48-451.8 58.32-208 10.48-406.36 10.6-408.32 10.6s-200.2 0-408.28-10.6c-313.88-16-417.72-43.24-451.8-58.32V954.32c0-1.68-14.12-170.8-41.44-343.68-32.92-208.56-66.56-309.08-97.16-359.08L1056.84 0a448.9 448.9 0 0 0 61.56 132.4c56.4 82.36 168.64 180.56 381.6 180.56s325.2-98.2 381.84-180.52c27.61-40.48 48.4-85.2 61.56-132.4z" fill="currentColor"/></svg>
                 <span>Par tenue</span>
             </h3>
         </div>
 
         <!-- CONTENU SCROLLABLE -->
-        <div style="overflow-y:auto;flex:1;min-height:0;">
+        <div style="overflow-y:auto;flex:1;min-height:0;padding:0 16px;">
             <!-- SÉLECTEUR DISCIPLINE (en relief) -->
-            <div id="tenue-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+            <div id="tenue-disc-group" style="padding:14px 0; border-bottom:1px solid var(--shadow-dark); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:6px;">
                     <button class="btn-choice active" onclick="filterTenueModal('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterTenueModal('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterTenueModal('TRAP1')" data-val="TRAP1">TRAP1</button>
                     <button class="btn-choice" onclick="filterTenueModal('PCH')" data-val="PCH">PCH</button>
                     <button class="btn-choice" onclick="filterTenueModal('CS')" data-val="CS">CS</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
                     <button class="btn-choice" onclick="filterTenueModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
                     <button class="btn-choice" onclick="filterTenueModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
                 </div>
@@ -859,7 +859,7 @@
         </div>
 
         <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeTenueModal()">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeTenueModal()">Fermer</button>
     </div>
 </div>
 
@@ -868,23 +868,23 @@
     <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <span>Badges</span>
             </h3>
         </div>
 
         <!-- CONTENU SCROLLABLE -->
-        <div style="overflow-y:auto;flex:1;min-height:0;">
+        <div style="overflow-y:auto;flex:1;min-height:0;padding:0 16px;">
             <!-- SÉLECTEUR DISCIPLINE (en relief) -->
-            <div id="badges-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+            <div id="badges-disc-group" style="padding:14px 0; border-bottom:1px solid var(--shadow-dark); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:6px;">
                     <button class="btn-choice active" onclick="filterBadgesModal('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterBadgesModal('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterBadgesModal('TRAP1')" data-val="TRAP1">TRAP1</button>
                     <button class="btn-choice" onclick="filterBadgesModal('PCH')" data-val="PCH">PCH</button>
                     <button class="btn-choice" onclick="filterBadgesModal('CS')" data-val="CS">CS</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
                     <button class="btn-choice" onclick="filterBadgesModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
                     <button class="btn-choice" onclick="filterBadgesModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
                 </div>
@@ -902,7 +902,7 @@
         </div>
 
         <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeBadgesModal()">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeBadgesModal()">Fermer</button>
     </div>
 </div>
 
@@ -911,24 +911,24 @@
     <div class="modal-box modal-stats" style="display:flex;flex-direction:column;">
         <!-- HEADER -->
         <div class="modal-header">
-            <h3 style="display:flex;align-items:center;gap:8px;">
+            <h3 style="display:flex;align-items:center;justify-content:center;gap:8px;">
                 <svg class="icon-sm" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 6 9 6 9zm12 0h1.5a2.5 2.5 0 0 0 0-5C17 4 18 9 18 9zm-9 0h6l-1 13H10L9 9z"></path></svg>
                 <span>Compétitions</span>
             </h3>
         </div>
 
         <!-- CONTENU SCROLLABLE -->
-        <div style="overflow-y:auto;flex:1;min-height:0;">
+        <div style="overflow-y:auto;flex:1;min-height:0;padding:0 16px;">
             <!-- SÉLECTEUR DISCIPLINE (en relief) -->
-            <div id="comp-modal-disc-group" style="background:var(--bg); padding:14px; border-radius:14px; box-shadow:var(--neu-out-sm); margin-bottom:16px;">
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px; margin-bottom:6px;">
+            <div id="comp-modal-disc-group" style="padding:14px 0; border-bottom:1px solid var(--shadow-dark); margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:6px;">
                     <button class="btn-choice active" onclick="filterCompModal('FU')" data-val="FU">FU</button>
                     <button class="btn-choice" onclick="filterCompModal('DTL')" data-val="DTL">DTL</button>
                     <button class="btn-choice" onclick="filterCompModal('TRAP1')" data-val="TRAP1">TRAP1</button>
                     <button class="btn-choice" onclick="filterCompModal('PCH')" data-val="PCH">PCH</button>
                     <button class="btn-choice" onclick="filterCompModal('CS')" data-val="CS">CS</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
                     <button class="btn-choice" onclick="filterCompModal('Fosse Olympique')" data-val="Fosse Olympique">Fosse Olympique</button>
                     <button class="btn-choice" onclick="filterCompModal('Skeet Olympique')" data-val="Skeet Olympique">Skeet Olympique</button>
                 </div>
@@ -940,7 +940,7 @@
             </div>
 
             <!-- KPI : 4 cartes (2x2) -->
-            <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-bottom:16px;">
+            <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:16px;">
                 <div class="comp-kpi-card">
                     <div class="comp-kpi-val" id="comp-kpi-count">0</div>
                     <div class="comp-kpi-label">COMPET.</div>
@@ -966,7 +966,7 @@
         </div>
 
         <!-- BOUTON FERMER EN BAS (en relief neumorphique, taille fixe) -->
-        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;" onclick="closeCompModal()">Fermer</button>
+        <button class="btn-secondary" style="margin-top:16px;flex-shrink:0;width:100%;" onclick="closeCompModal()">Fermer</button>
     </div>
 </div>
 
@@ -1085,7 +1085,7 @@
 
         <!-- MODAL STAND -->
         <div id="modal-stand" class="modal-overlay" style="display:none;">
-            <div class="modal-box" style="max-width:450px;">
+            <div class="modal-box">
                 <h3 id="stand-modal-title">Nouveau Stand</h3>
                 <input type="hidden" id="stand-id">
                 <div class="form-group"><label class="label" style="text-align:center;">Nom du stand</label><input type="text" id="stand-nom" class="input-neu" placeholder="Ex: BTC Argentan"></div>
@@ -1194,7 +1194,7 @@
 
         <!-- MODALE GESTION CARTOUCHES (Refonte Premium) -->
         <div id="modal-cartouches" class="modal-overlay" style="display:none;">
-            <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column;">
+            <div class="modal-box" style="display:flex; flex-direction:column;">
                 <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="svg-fill" viewBox="0 0 767 577" style="width:28px;height:28px;"><path d="M109.57.67c-16.1 2.9-36.3 14.5-52.8 30.2-16.2 15.5-28.1 31.7-38.3 52.4-20.7 42-24.2 83.5-9.5 112.7 4.1 8 12.4 15.3 27.9 24.6 7.7 4.7 17.8 10.8 22.5 13.6 4.7 2.9 17.1 10.4 27.5 16.7 10.5 6.4 28.5 17.3 40 24.3 58.1 35.3 111 67.5 153 93 14.3 8.6 28.5 17.3 31.5 19.2s22.6 13.8 43.5 26.5c40.1 24.3 49.3 29.9 83 50.3 11.6 7 23 14 25.5 15.5s14 8.5 25.5 15.5c11.6 7 25.3 15.4 30.5 18.5 5.2 3.2 16.4 10 24.9 15.2l15.5 9.3 4.4 8.9c7.5 14.8 17.9 23.6 33.7 28.1 8.6 2.5 24.2 1.7 35.5-2 43.3-14 87.7-60.5 114.1-119.4 22.8-51.1 26.3-103.2 9-133.5-5.8-10.1-16.9-19.3-27.6-23.1-6-2.1-23.2-3.1-29.3-1.7-4 .9-4.9.8-10.5-2.2-3.4-1.8-26.7-14.1-51.7-27.3-25-13.3-68.2-36.1-96-50.8s-69.8-37-93.5-49.5c-57.4-30.3-128.3-67.9-137-72.5-3.8-2-27.2-14.4-52-27.5-24.7-13-61-32.2-80.5-42.6-19.5-10.3-37.7-19.6-40.5-20.7-5.9-2.2-20.4-3.1-28.3-1.7m527.7 272.2c17.9 9.5 36.1 19.1 40.3 21.3 4.3 2.2 7.8 4.2 7.8 4.5s-3.9 2.4-8.7 4.5c-10.8 4.9-23 12.8-34.8 22.6-39.8 33.2-74.6 94.2-84.1 147.4-1.9 11-2.5 39.4-1 50.3l.8 6.3-18.3-11.2c-10.1-6.2-20.6-12.5-23.4-14.2-27.6-16.3-37.7-23.2-40.6-27.3-4.6-6.7-8.7-16.1-10.6-24.4-2.5-10.7-2.5-37.8.1-51.5 5.7-30.6 23.2-67.6 44.3-93.5 8.5-10.5 24.3-25.5 33.8-32.2 20.1-14.1 34.7-19.5 52.9-19.7l8.9-.1zm89.1 30c3.3 1.4 2.8 1.4-8.2 1-10.4-.4-12.6-.2-20.9 2.2-19.3 5.6-38.5 18.1-58.4 38-16.9 17-28.2 31.9-41.2 54.6-26.4 45.9-37.8 99-28.7 134.3 2.1 8.4 7.4 19.2 12 24.6 2.8 3.2 3.2 4.1 1.6 3.2-3.1-1.6-9.8-10.4-13.2-17-12.3-24.7-10.3-66.7 5.1-107.9 17.2-46 47-87.6 80.9-112.9 10.8-8.1 32.2-18.8 41.5-20.8 8.5-1.8 24.5-1.4 29.5.7m6.5 18.8c7.4 2.9 16.9 12 20.8 20 14 29.1 7.3 78.5-17.3 126.5-39.7 77.8-108.5 120.9-141.3 88.7-5.8-5.7-8.6-10.4-12.1-20-17.3-48.4 18.5-140.7 73.4-189 27.8-24.5 55.9-34.1 76.5-26.2" fill="currentColor" stroke="none"/></svg> Mes Cartouches</h3>
                 
                 <!-- Ajout rapide -->
@@ -1205,12 +1205,12 @@
 
                 <div id="cartouches-container" style="overflow-y:auto; flex:1; margin-bottom:15px;"></div>
                 
-                <button class="btn-secondary" onclick="closeCartouchesManager()">Fermer</button>
+                <button class="btn-secondary" style="width:100%;" onclick="closeCartouchesManager()">Fermer</button>
             </div>
         </div>
                 <!-- MODALE TENUES -->
         <div id="modal-tenues" class="modal-overlay" style="display:none;">
-            <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column;">
+            <div class="modal-box" style="display:flex; flex-direction:column;">
                 <h3 style="margin:0 0 20px 0; text-align:center; color:var(--accent); display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="svg-fill" viewBox="0 0 3000 2923" style="width:28px;height:28px;"><path d="M565.28 958.96v135.44l-191.32 196.36L0 916.84 442.08 298c19.2 35.48 50.44 120.92 82.68 324.84C550.16 784.08 564 942 565.28 958.96M3000 916.84l-373.96 373.92-191.28-196.36V958.96c1.44-16.96 15.12-174.84 40.56-336 32-204 63.44-289.36 82.6-324.84z" fill="currentColor"/><path d="M2498.84 251.6c-30.6 49.96-64.24 150.48-97.16 359.08-27.28 172.88-41.28 342-41.44 343.68v1899.4c-34.04 15.08-137.92 42.48-451.8 58.32-208 10.48-406.36 10.6-408.32 10.6s-200.2 0-408.28-10.6c-313.88-16-417.72-43.24-451.8-58.32V954.32c0-1.68-14.12-170.8-41.44-343.68-32.92-208.56-66.56-309.08-97.16-359.08L1056.84 0a448.9 448.9 0 0 0 61.56 132.4c56.4 82.36 168.64 180.56 381.6 180.56s325.2-98.2 381.84-180.52c27.61-40.48 48.4-85.2 61.56-132.4z" fill="currentColor"/></svg> Mes Tenues</h3>
                 
                 <div style="overflow-y:auto; flex:1; margin-bottom:15px;">
@@ -1235,7 +1235,7 @@
 
                 </div>
 
-                <button class="btn-secondary" onclick="closeTenuesManager()">Fermer</button>
+                <button class="btn-secondary" style="width:100%;" onclick="closeTenuesManager()">Fermer</button>
             </div>
         </div>
 
